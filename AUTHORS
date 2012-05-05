@@ -1,0 +1,31 @@
+Maintainer
+----------
+V. Alex Brennen <vab@cryptnet.net> [ http://cryptnet.net/people/vab/ ]
+
+Contributors
+------------
+John Goerzen <jgoerzen@complete.org> [ http://www.complete.org/ ] 
+Francisco Jesus Monserrat Coll <francisco.monserrat@rediris.es>
+[RIP] damdum@ghettohackers.net
+Andrew Griffiths <nullptr@tasmail.com>
+Simon Josefsson <jas@extundo.com>
+
+Translations
+------------
+[de]  Stephan Reichenbach <stephan.reichenbach@addcom.de>
+
+Debugging and Testing Help
+--------------------------
+M. Drew Streib <dtype@dtype.org> [ http://www.dtype.org/ ]
+
+GPL'd Source Code Copied From
+-----------------------------
+Werner Koch <werner.koch@guug.de> (GnuPG Project)
+Ulrich Drepper <drepper@gnu.ai.mit.edu> (Gnu Project)
+Timothy H. Keitt <Timothy.Keitt@stonybrook.edu>
+
+Special Thanks
+--------------
+[RIP] Len Sassaman <rabbi@quickie.net> (for his support)
+Phil Zimmermann <pz@mit.edu> (for his encouragement and suggestions)
+

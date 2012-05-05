@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE article PUBLIC '-//OASIS//DTD DocBook XML V4.2//EN' "http://oasis-open.org/docbook/xml/4.2/docbookx.dtd"[]>
+
+<book lang="en">
+<title>CryptNET Keyserver User's Manual</title>
+<author>
+<firstname>V. Alex</firstname>
+<surname>Brennen</surname>
+<affiliation>
+<address><email>vab@cryptnet.net</email></address>
+</affiliation>
+</author>
+<pubdate>2004-05-28</pubdate>
+<revhistory>
+	<revision>
+		<revnumber>0.1.5</revnumber>
+		<date>2004-06-03</date>
+		<authorinitials>VAB</authorinitials>
+		<revremark>Initial Release.</revremark>
+	</revision>
+</revhistory>
+<chapter id="intro">
+<title>Introduction to the CryptNET Keyserver</title>
+<para>
+The CryptNET Keyserver is an software system designed to provide key service.  It will allow you to store and retrieve keys.  CKS is a robust solution which can be implemented to provide keyservice for a single group or corporation or it can be used to provide keyservice to the entire world.  CKS is capable of joining the globally synchronizing PGP PKS Keyserver network which is used by millions of individuals everyday.
+</para>
+</chapter>
+<chapter id="interfaces">
+<title>The Multiple Keyserver Interfaces</title>
+<para>
+There are multiple interfaces available to you which will allow you to retrieve and modify keys in a fast and efficient manner.  These interfaces, or access methods are, the PKS protocol, the servers CGI Web Server, and electronic mail.
+</para>
+</chapter>
+<chapter id="retrieve">
+<title>Retrieving A Key</title>
+<para>
+</para>
+</chapter>
+<chapter id="submit">
+<title>Submitting A Key</title>
+<para>
+To submit a key with GNU Privacy Guard (gpg) you may execute the following command:
+</para>
+<screen>
+bash$ gpg --sendkey [keyid]
+</screen>
+</chapter>
+<chapter id="stats">
+<title>The CryptNET Keyserver Statistics</title>
+<para>
+</para>
+</chapter>
+<chapter id="others">
+<title>The CryptNET Keyserver Visualization Tools</title>
+<para>
+</para>
+</chapter>
+<chapter id="advanced">
+<title>Advanced Use of The Keyserver</title>
+<para>
+</para>
+</chapter>
+<appendix>
+</appendix>
+<bibliography>
+</bibliography>
+<glossary>
+<title>Glossary of Terms</title>
+<glossdiv><title>E</title>
+
+<glossentry id="xml"><glossterm>Extensible Markup Language</glossterm>
+  <acronym>XML</acronym>
+<glossdef>
+  <para>Some reasonable definition here.</para>
+  <glossseealso otherterm="sgml">
+</glossdef>
+</glossentry>
+</glossdiv>
+
+</glossary>
+</book>

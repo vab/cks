@@ -1,0 +1,6 @@
+AuthType Basic
+AuthName cks_admin
+AuthUserFile /web/cryptnet.net/virtual/keyserver/gnv/admin/.htpasswd
+<Limit GET POST>
+Require valid-user
+</Limit>

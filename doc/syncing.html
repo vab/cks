@@ -1,0 +1,112 @@
+<HTML><HEAD><TITLE>CryptNET Keyserver Network Synchronization</TITLE></HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<CENTER><H1>Keyserver Network Synchronization</H1></CENTER>
+<HR SIZE=1 WIDTH=100%>
+<H3>About Synchronization</H3>
+
+<P>Keyserver network synchronization is one of the more technically
+challenging aspects of keyservers design and deployment.  In the
+current version of the CryptNET keyserver, great effort has not been
+made to solve this problem in an optimum way.  This version of the
+keyserver simply uses sockets as it's preferred mechanism of
+synchronization. Basically, the keyserver packets includes a program
+which mimics a client submitting a key.
+
+<P>In future versions of CKS, an optimal solution will be persued.
+Most likely, a binary synchronization protocol will be developed
+to allow rapid synchronization with other hosts.
+
+<H3>Current Synchronization Mechanisms</H3>
+
+In this version of CKS, there are three programs that are responsible
+for synchronization.  They are <B><i>cks_sync</i></B>, 
+<B><i>cks_mail_sync</i></B>, <B><I>cks_sync_manage</B></I>, and <B><i>cksd</i></B>.  These programs
+work together to synchronize a CryptNET keyserver node with the CryptNET
+keyserver network and to allow synchronization with pks based keyserver
+networks.
+
+When new key material is added to a keyserver, an entry is placed in
+the cks_pending_sync table for that key.  The keyserver transmits
+the full key info to its peers when the cks_sync program is run.
+The peers to do not retransmit the material.  Keys which are added
+by the cks_sync program do not generate records in the
+<I>cks_pending_sync</I> table.  I currently make sure to provide new
+CryptNET Keyserver Network node administrators with a full list of
+servers in order to ensure that key material propagates fully and
+properly.  The lack of a post secondary relaying mechanism prevents
+infinite looping of key material synchronization.
+
+<BR>
+<P><B>cks_sync</B>
+<P>This is the primary program responsible for synchronization.  This
+program is meant to be run from a cron job.  I currently have the
+program set up to run nightly, however it may be practical to run the
+program hourly.  cks_sync queries the postgres server in order to
+build a linked list of servers to synchronize with, and a list of
+public keys which need to be synchronized.  cks_sync then walks the
+lists of servers and keys transmitting the keys to instances of cksd
+using the hkp protocol (http 1.0 cgi post).
+
+<P>Keys which are to be synchronized are stored in the <I>cks_pending_sync</I>
+table by their fingerprint.  The list of servers to synchronize with
+is stored in the <I>cks_other_servers</I> table.  The field
+<I>sync_priority</I> allows a priority to be set for each server. When
+cks_sync pulls the server list, it sorts the results by the priority
+field.
+
+<BR>
+<P><B>cks_sync_manage</B>
+<P>cks_sync_manage is a self explanatory program used to manage the
+records in the <I>cks_other_servers</I> table.
+
+<BR>
+<P><B>cks_mail_sync</B>
+<P>cks_mail_sync is a special program which was written to allow the
+CryptNET Keyserver Network to be synchronized as a client on a pks
+based keyserver network.  pks based networks use email to synchronize.
+The pks package contains pop3 client code which pops keys off a mail
+box after a set period of time has elapsed and add them to its keyring.
+This design requires that a pop3 daemon is run and that a pop3 account
+password is stored in the pks config files.  In the interest of security,
+cks_mail_sync was designed in a different manner.
+
+<P>cks_mail_sync is meant to be called by your MTA through the addition
+of an entry in a .forward file.  After authorization is added for the
+mail account (usually called pgp-keys) in the postgres database,
+cks_mail_sync can be called by the MTA when an email arrives from a pks
+server.  cks_mail_sync is designed to parse and process the key.  If
+the key is not currently in the database, cks_mail_sync will add it.
+cks_mail_sync will also handle key material mergers as required.
+
+<P>The current plan for the CryptNET Keyserver Network is to run
+cks_mail_sync only on the primary node - gnv.us.ks.cryptnet.net -
+and then to have gnv.us.ks.cryptnet.net synchronized keys from
+pks based servers to other CryptNET Keyserver Network nodes with
+the CKS cks_sync hkp based synchronization.  cks_mail_sync is
+provided in the distribution for instructional purposes and in the
+event that anyone wishes to set up a CKS based keyserver independent
+of the CryptNET network.
+
+<BR>
+<P><B>cksd</B>
+<P>cksd is the main daemon responsible for keyservice.  The only role
+that cksd plays in synchronization is through the reception and storage
+of key transmissions from cks_sync.
+
+<H3>Notes about key deletion as it relates to synchronization</H3>
+<P>CKS is a novel keyserver platform in that it allows keys to be
+specified as rejected.  A rejected key cannot be added to the database.
+Keys can only be given rejected status by the keyserver node administrator
+through the <B><I>delete.cgi</I></B> program.  The mechanism of action
+behind this is the storage of the rejected key's fingerprint is a database
+table called <I>cks_rejected_keys</I>.  If a synchronization addition of a
+rejected key is attempted, the key will not be added to the database.
+
+<P>CKS is currently not capable of synchronizing key rejection status across
+different keyserver nodes due to the authentication and security requirements
+of such a mechanism.  This feature will likely be available in the near
+future (post 1.0.0) as this is not a terribly difficult problem.
+
+<HR SIZE=0 WIDTH=100%>
+<CENTER><H6>VAB</H6></CENTER>
+</BODY></HTML>

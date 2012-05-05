@@ -1,0 +1,17 @@
+Submitting Bugs
+---------------
+Please submit bugs to the bug tracking system on the 
+source forge project page:  https://sourceforge.net/projects/cks/
+
+Known Bugs
+----------
+Key merging does not update primary key info
+Key merging needs to more closely examine signature packets
+sync host management application isn't done yet
+969739	Valgrind: parse_attribute_sub_packets
+969734	Valgrind: Memory Violation
+969089	cks_import skips last pubkey in keyring
+968930	realloc in escape single quotes causing crash on free
+968374	cks_import subpacket parse error segfault
+967152	Key Merger/parsing Error When running cks_import
+966767	cks_import race condition on import error

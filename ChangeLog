@@ -1,0 +1,255 @@
+Version 0.2.4
+-------------
+Revert v0.2.2 pthreads changes.
+Change in postgresql query api code to handle PGRES_COMMAND_OK result (v9
+	compatibility change.)
+Code clean up (replace spaces with tabs)
+Additional error checking and logging.
+Add missing posgres permissions grants to cks.sql (v9 compatibility change)
+Remove hooks for IBM DB2 Support
+
+Version 0.2.3
+-------------
+Feature Request Completed: [ 1000332 ] sigalm to prevent cpu throttle (vab)
+Fixed Bug: [ 999662 ] Legacy gcc compatibility (pacoje) 
+Fixed Bug: [ 999656 ] tcpwrappers problems in-addr.arpa (pacoje)
+Fixed Bug: [ 999925 ] cks import problems (vab)
+Fixed Bug: [ 969089 ] cks_import skips last pubkey in keyring (vab)
+Fixed Bug: [ 999676 ] cks import problems (vab)
+A context was created to handle state information (vab)
+sql updates (bug in formatting of cks.sql.in) (vab)
+General code clean-up (Function Signature Changes) (vab)
+cks_install.pl removed (Integrated into Autoconf/Automake) (vab)
+
+Version 0.2.2
+-------------
+Feature Request Completed: [ 967140 ] Display images in pgp keys (vab)
+[ http://gnv.us.ks.cryptnet.net/en/search.cgi?stype=fp&fp=AB55B9403A6A42DC0B8A9A4C1D835EF87B1CB6B3 ]
+Feature Request Completed: [ 967134 ] Make HTML compilant (vab)
+Feature Request Completed: [ 979235 ] Support --version and -v (vab)
+Feature Request Completed: [ 976828 ] Cache most frequently accessed
+                                        keys in memory (vab)
+Fixed Bug: [ 977574 ] Offset Error in DB Table Iteration (vab)
+Fixed Bug: [ 981254 ] Config is loaded twice in some places (vab)
+Fixed Bug: [ 981307 ] configure error when prefix not specified (vab)
+Fixed Bug: [ 979128 ] Very old PGP Keys Cause Server Error (vab)
+Fixed Bug: [ 979233 ] ISC Key Cannot be parsed by CKS (vab)
+Fixed Bug: [ 968930 ] realloc in escape single quotes causing crash (vab)
+Fixed Bug: [ 968374 ] cks_import subpacket parse error segfault (vab)
+
+Version 0.2.0
+-------------
+Simon added CKS_DNS added to the main CKS tree (jas4711)
+Reorganization of the Sync Code (vab)
+Expansion of the Sync Code and Mgmt Programs (vab)
+Cleaner CGI parsing code (vab)
+parser bug fixes & new error checks and recoveries (vab)
+better v4 signature subpacket parsing (vab)
+new ./configure options for usernames, database name, and paths (jas4711)
+cks_mail_util removed (merged into cks_sync) cks_mail_util.c|h deleted (vab)
+CKS http sync code removed (maybe merge back in v.2.0.0). (vab)
+fix for memory leak in cks_export (vab)
+code clean up: more rtrn val checking (vab)
+cks_sync now uses To: server, server, server (PKS Compliance) (vab)
+cks_sync code to parse servers already sent keys (vab)
+cks_export functionally complete (vab)
+cks_import functionally complete (vab)
+cks_sync functionally complete (vab)
+cache code started (added cks_cache.h|c) (vab)
+reconcile code started (added cks_reconcile.h|c) (vab)
+Memory leak cleanups in cksd (vab)
+Feature Request #616376: Fully Support Legacy PKS style syncing (vab)
+
+Version 0.1.5
+-------------
+More graceful handling of bad key packet data in cks_import.c and parse.c
+Code Cleanup: Type change of many variables (signed|unsigned & int|long)
+BUGFIX: Segfaults in cks_import listed in BUGS file corrected.
+Init script created for cksd
+Hooks for XML Support
+cks_export now segments into 50,000 key files
+Additional packet type handling code in parse.c
+html compliance clean-up
+New Debug Functions
+Removal of void returns on some functions
+Fixed Bug #967152: Key merger on import
+cks_import can now glob input:  bash$ cks_import *.ring
+OpenLDAP is now longer required to build
+html/index.cgi no provides LANG support
+properly formatted error output with source constant flag
+Optimization: Quote escape function is only called if quote is found in ID data
+memset/sizeof bugfixes
+parse.c bugfix for subpkt length determination
+hooks for better key revocation support
+Improved rfc2440bis-10 support
+Fixed Bug #969798: Key Differencing Code Is Not Working Correctly
+
+Version 0.1.4
+-------------
+Changed BigLumber Link into a configurable option
+Added option for Attempting Off Network Fetching
+Changes to cks.conf
+cks_import no longer inserts into cks_pending_sync table
+New Documentation on setting up mail syncing.
+Memory Management cleanups in parse.c
+More new code and code cleanup to help support other db types
+Major HTML Updates
+Hooks for Individual Key Statistics Functionality
+Hooks for WOT Info Functionality
+Bug fix in cks_export
+Added Buffer Flushes to Make Web Interface Seem Faster
+Added cks_puid_table for faster web search results (massive speed-up)
+Changed the way packets are free'd for clearer mem mgmt
+Additional Debugging code
+Various fixes for variable inits
+Function pass checks
+NULL checks before frees
+Fixed memory leak in data structures (uid free)
+Fixed memory leak in escape_single_quotes (bad pointer)
+Fixed memory leak with key img subpacket data
+Fixed memory leak in cks_sync_manage (double init)
+
+Version 0.1.3
+-------------
+Bug with m4 in build process corrected
+DB Abstraction Code Changes
+DB type support hooks for IBM DB2 and GDBM
+Changes to cks.conf
+Minor Changes to Datastructures
+Additional Image Support Work
+SQL Expanded For Easier Install
+Included some i18n HTML
+Updated HTML
+Moved HTML pages into en directory
+added an index.cgi redirect
+i18n: Better Support For German
+i18n: Better Support For Spanish
+Documentation on CKS_sync cron scheduling
+Improvements to cks_sync_util (outbound horowitz mail sync support added)
+Bug Fix in cks.conf file (escaped url)
+Added Link to Big Lumber in Search Results
+Very Early Code To Start for LDAP Support
+
+Version 0.1.2
+-------------
+Cleanups in cks_mail_util
+Improved build environment
+Support for more packet types
+Beginning Image Support
+Introduction of keyimg.cgi
+Limited Support For New Packet Format
+SQL Table structure Changes
+
+Version 0.1.1
+-------------
+Horowitz (pksd) mail sync code expansion
+Created cks_mail_util binary
+General code clean up
+Started i18n l10n work
+gettextize ran, po, intl dirs created
+German Translations Added
+
+Version 0.1.0
+-------------
+Bug fix for HTML truncation in cksd
+Bug fix in cks_mail_sync for uninit'd pointer
+Support for new formats of HKP queries: 64 bit key ID, 128 bit fp, 160 bit fp
+Beginning Support for advanced queries
+Support for limitation of max keys returned per query
+Support for limitation of max keys w/ same id returned
+Memory leak fixes
+Fix for bug in creation time display
+New stats code
+Beginning Support for RPM package (spec file added)
+Fix for search to return multiple keys w/ same id
+
+Version 0.0.9
+-------------
+Autoconf checks for libpq and libpq-fe.h
+patch for syslog formatting
+General code clean up
+lint complaint fixes
+Support for 0x prefixes
+Removal of "dangerous function" calls.  No calls where exploitable - just done to make auditing easier
+cks_export written
+minor progress on email syncing code
+db schema changes to support old email syncing mechanisms
+Bug fix for key merger bug
+
+Version 0.0.8
+-------------
+Memory Clean-Up (Leak Fixes)
+Data Structure Initialization fixes
+Fix for a key merger bug
+Copyright information added to source files
+Radix Encoded Data Generation failure fix
+General Code Clean Up
+General Error Handling Improvements
+sync_manage helper application written
+Bug fix for ' escaping in radix encoded data (UIDs)
+Additional Debugging code added
+Result constants for key addition
+
+Version 0.0.7
+-------------
+Working copy of cks_import
+Fix for key merger bug 
+Introduction of bad key flag in pubkey
+Much improved error handling
+
+Version 0.0.6
+-------------
+Code consolidation in preparation for pthreads deployment
+Beginnings of Syslog support
+Security Fix for sql injection bug
+Fix for segfault on no signatures on keyids
+Fix for segfault on merge with key with no ids
+Fix for segfault on merge with key will no subkeys
+support for addition of keyrings
+Fix for segfault on UIDs
+
+Version 0.0.5
+-------------
+New DB Schema
+Query bug fix
+Speed up patch
+key merger bug fix
+automake and autoconf support
+multiple subkey support
+subkey id generation fix
+administrative programs
+db schema changes
+Full PGP2 support
+Lots of bug fixes
+new cksd socket code
+pksd email sync program
+GNU coding standards compliance improvements
+config file support
+automake and autoconf support added
+
+Version 0.0.4
+-------------
+Primary Keys added to tables
+Much more error checking
+PGP7 Bug Fix
+Limited Version PGP2 Support
+Delete Keys Program
+SRC format brought into more compliance with GNU Standards
+Key material merge bugfix
+
+Version 0.0.3
+-------------
+Large number of bug fixes
+Major feature enhancements
+Major speed improvements
+
+Version 0.0.2
+-------------
+Large OID support added
+Major feature enhancements
+Large number of bugfixes
+
+Version 0.0.1
+-------------
+Initial Release
+

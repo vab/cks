@@ -1,0 +1,78 @@
+<html><head><title>CryptNETs ffentlicher Schlsselserver (CKS)</title></head>
+<body bgcolor="#FFFFFF">
+<center><h1>Informationen ber CryptNETs ffentlicher Schlsselserver (CKS)</h1></center>
+<hr size="1" width="100%">
+<center>
+[ <a href="index.html">Suche</a> ]
+[ <a href="add.html">�fentlichen Schlssel hinzufgen</a> ]
+[ <a href="advsrch.html">Erweiterte Suche</a> ]
+[ <a href="sign.html">Server Key Signing</a> ]<br>
+[ <a href="stats/">Server Statistik</a> ]
+[ <a href="keystats.html">Key Statistik</a> ]
+[ <a href="wot.html">Web Of Trust Information</a> ]
+[ <a href="help.html">Hilfe</a> ]
+[ <a href="about.html">Infos ber CKS</a> ]
+</center>
+<hr size="1" width="100%">
+<center><h2>Version: 0.2.2 (alpha)</h2></center>
+<center><h3><font color="RED">Die Software befindet sich derzeit noch im Alphastadium.</h3></font></center>
+<p>Das Verffentlichungsdatum der ersten Beata-Version steht noch nicht fest.  Mit der
+Beta-Version wird auch der Quellcode verffentlicht.</p>
+<hr size="1" width="100%">
+<p>Der CryptNET Public KeyServer ist freie Software, verffentlicht unter den
+Bedingungen der <a href="http://www.fsf.org/copyleft/gpl.html">GNU General Public
+License (Version 2)</a>. Das Herunterladen, Vervielf�tigen, Benutzen, Ver�dern
+oder Verbessern der Software ist unter den Bedingungen der GPL zul�sig. Patches, Fragen,
+Bemerkungen oder Vorschl�e bitte an den Autor senden, <a
+href="http://www.cryptnet.net/people/vab/">V. Alex Brennen</a> [<a
+href="mialto:vab@cryptnet.net">vab@cryptnet.net</a>].</p>
+<p>Der Schlsselserver orientiert sich an <a href="/mirrors/rfcs/rfc2440.txt">RFC2440</a> (openPGP)
+Er besteht aus einer Reihe von CGI-Skripten, programmiert in C fr die Linux
+Plattform.  Die Skripte beinhalten Schnittstellen zur <a
+href="http://www.postgresql.org/">Postgres</a> relationalen Datenbank.</p>
+<p>Der CryptNET Schlsselserver-Quellcode findet man unter <a href="http://www.cryptnet.net/fsp/cks/index.html">http://www.cryptnet.net/fsp/cks/index.html</a></p>
+<br></br>
+<hr size="1" width="100%">
+<center><h2><u>Zeitplan</u></h2></center>
+<hr size="1" width="100%">
+<center><h3>Version: 0.2.5 (Beta Release)</h3></center>
+<b>Funktionen:</b>
+<UL>
+<li>openPGP (RFC2440) orientiert (Version 3 und Version 4 Pakete)</li>
+<li>Benutzer knnen Schlssel ber den Web-Browser bersenden und wiederherstellen</li>
+<li>Verbindung zu RDBMS (postgreSQL) fr die Speicherung</li>
+<li>pks Protokoll-Untersttzung</li>
+<li>Updates von zuvor bersandten Schlsseln (mit korrekter Aktualisierung)</li>
+<li>Korrekter Umgang mit dem Verfallsdatum oder dem Widerrufen von Schlsseln</li>
+<li>Synchronisation mit anderen Schlsselservern ber das (HTTP) PKS Protokoll</li>
+<li>Suche nach UID, 4 Byte Schlssel-ID, 8 Byte Schlssel-ID und vollst�digem Fingerabdruck</li>
+</UL>
+<hr size="1" width="100%">
+<center><h3>Version: 1.0.0</h3></center>
+<b>Neue Funktionen:</b>
+<ul>Keine. Stabilisierung der Beta-Version.</li>
+</ul>
+<hr size="1" width="100%">
+<center><h3>Version: 2.0.0</h3></center>
+<b>Neue Funktionen:</b>
+<ul>
+<li>Gltigkeit von Signaturen verschlsselt bearbeiten</li>
+<li>Korrekter Umgang mit Signatur-Verfallsdatum</li>
+<li>Versenden und Empfangen von openPGP Daten, die mehr als einen ffentlichen Schlssel enthalten</li>
+</ul>
+<hr size="1" width="100%">
+<center><h3>Version: 3.0.0</h3></center>
+<b>Neue Funktionen:</b>
+<ul>
+<li>Vollst�dig Multi-Threaded (w/Pthreads)</li>
+<li>Dynamisches Zwischenspeichern von h�fig angeforderten Schlsseln</li>
+<li>Bin�orientiertes Synchronisations-Protokoll</li>
+<li>Peer-Speicherung/Verffentlichungs-Suche (in der Art von DNS)</li>
+</ul>
+<hr size="1" width="100%">
+<center>
+<a href="http://cryptnet.net/">CryptNET:</a>
+ <a href="http://cryptnet.net/fsp/">FSP:</a>
+ <a href="http://cryptnet.net/fsp/cks/">CKS</a>
+</center>
+</body></html>

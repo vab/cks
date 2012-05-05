@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE book PUBLIC '-//OASIS//DTD DocBook XML V4.2//EN' "http://oasis-open.org/docbook/xml/4.2/docbookx.dtd"[]>
+
+<book lang="en">
+<title>CryptNET Keyserver Administrator's Manual</title>
+<bookinfo>
+<author>
+<firstname>V. Alex</firstname>
+<surname>Brennen</surname>
+<affiliation>
+<address><email>vab@cryptnet.net</email></address>
+</affiliation>
+</author>
+<pubdate>2004-05-28</pubdate>
+<revhistory>
+	<revision>
+		<revnumber>0.1.5</revnumber>
+		<date>2004-06-03</date>
+		<authorinitials>VAB</authorinitials>
+		<revremark>Initial Release.</revremark>
+	</revision>
+</revhistory>
+</bookinfo>
+<chapter id="intro">
+<title>Introduction to the CryptNET Keyserver</title>
+<para>
+The CryptNET Keyserver is an RFC2440 compliant keyserver. It fully supports the openPGP standard. 
+This keyserver stores its key material in a relational database to allow for faster searches and
+advanced queries.  Running the keyserver is not difficult and should not pose many administration 
+head aches.
+</para>
+
+<para>
+The keyserver was designed to serve both the needs of the pgp community at large as well 
+as companies and organizations which wish to leverage the PGP technology to improve their
+business process.
+</para>
+
+<para>
+For the pgp community at large, the keyserver includes features such as synchronization
+and reconciliation.
+</para>
+
+</chapter>
+<chapter id="installation">
+<title>Installation of the Keyserver</title>
+<para>
+The keyserver is a complex piece of software.  It was designed to be capable of providing 
+keyserver for organization ranging from the smallest to the largest companies, and even 
+to perform as a node in the world wide network of public keyserver which attempt to store
+all publicly published public keys and revocation certificates.
+</para>
+
+
+<para>
+If you choose to run the keyserver internally with in your organization or company, you 
+must first decide what type of key access protocols you will support.  The keyserver is
+capable of serving keys over HTML, PKS, and email.  The easiest, and most basic installation,
+can be done supporting HTML and PKS.
+</para>
+
+<para>
+If you choose to run a public keyserver which is
+part of the world wide keyserver network, there are many programs which much be executed in a 
+coordinated fashion. Not only does it need to process and store PGP
+keys on the server it is running on, but it must also synchronize with other keyservers in the 
+work wide network to ensure that it has a complete keyring of all publicly publish public keys
+and revocation certificates.
+</para>
+
+<para>
+Synchronization involves retrieving and importing a full keyring, listening for email messages
+from other keyserver, and performing a reconciliation with another public CryptNET keyserver.
+These processes and the related programs are all described in the sections that follow.
+</para>
+
+<para>
+There are currently only a small number of public keyservers.  Administration does not take
+significant resources or administrative effort.  If you are planning on running a keyserver
+for your organization, you are encouraged to consider running the keyserver in as part of 
+the public network.  Or, alternatively, to run a second keyserver which is part of the 
+world wide network.
+</para>
+
+</chapter>
+
+<chapter id="compiling">
+<title>Compiling the Keyserver</title>
+<para>
+The keyserver was written with an effort to keep the number of prerequisite programs to 
+a limited number.  There are however some unavoidable dependencies.  They are currently
+the Postgres RDBMS, and libxml.
+</para>
+
+<para>
+There are numerous pre-compile configuration options which where put in place to make 
+it as easy as possible for you to install the keyserver.  Those options are:
+</para>
+
+<screen>
+./configure --help
+  --conf-dir                [Configuration Directory]
+  --
+</screen>
+
+<para>
+The post compile process includes the running of perl script in addition to the running
+of make install.  This is because there are some additional steps which are required to 
+make sure that your keyserver is able to perform the various tasks which it needs to in 
+order to run in a complete and successful manner.
+</para>
+
+</chapter>
+
+<chapter id="config">
+<title>Configuration of the Keyserver</title>
+<para>
+The CKS Configuration file is <filename>cks.conf</filename> and by default CKS searches for it
+in <filename class="directory">/usr/local/etc/</filename>.  This file is a standard white space
+delimited text file which can be updated at anytime.
+</para>
+
+<para>
+You must at a minimum configure the correct ip addresses, host names, and in the case of a
+publicly available keyserver the email addresses in the configuration file.  Information in
+the config file relating to the database name and the ip address of the database server 
+should be sufficient as is.
+</para>
+
+<para>
+The configuration file will allow you to customize the comment line of the radix armored 
+public keys and keyrings exported from the keyserver.  You may which to include the 
+name and address of your keyserver rather than the default message which is shipped with
+the keyserver software.
+</para>
+
+</chapter>
+<chapter id="prepair">
+<title>Prepairing the Database</title>
+<para>
+The first step in prepairing the database is to create the postgresSQL database as so:
+</para>
+<screen>
+bash$ createdb pgp_keys
+</screen>
+<para>The next step is to create the actual tables and indexes associated with the database,
+this is done by running the <filename>cks.sql</filename> file.  This file contains the SQL
+commands which will create those parts of the database.  The way to run this file is from
+with in the <application>psql</application> program:
+</para>
+<screen>
+bash$ psql pgp_keys
+psql-> \i cks.sql
+</screen>
+<para>
+</para>
+<para>
+Now that we have an underlying database structure into which we can load PGP key data, 
+it's time to load some keys.  CKS includes a program named <application>cks_import</application>
+to load files in the PGP Keyring format into the database.  The global keyserver which 
+attempt to hold all of the keys which users world wide wish to publish on a public
+keyserver provided exported keyrings to server who may wish to join their network.  One
+locate from which you can download that exported keyring is: <ulink url="http://cryptnet.net/mirrors/global_keyring/">
+http://cryptnet.net/mirrors/global_keyring/</ulink>.  Once you've downloaded the files
+which comprise the keyring you can load them with <application>cks_import</application>.
+This is do as so:
+</para>
+<screen>
+bash$ cks_import *.pgp
+</screen>
+<para>
+<application>cks_import</application> accepts a verbose flag <option>-v</option> which will
+cause it to print the fingerprint of the keys as it imports them.</para>
+</chapter>
+<chapter id="running">
+<title>Running The CryptNET Keyserver</title>
+<para>Running the keyserver is not as difficult as you might expect.  Once all of the 
+program runs and system backups are scheduled with cron running the system basically
+consists of monitoring for errors.
+</para>
+</chapter>
+<chapter id="others">
+<title>Synchronization With Other Keyservers</title>
+<para>There are multiple types of synchronization including, CKS HTTP based, 
+PKSD email based, and SKS protocol synchronization.  CryptNET CKS does not 
+support SKS synchronization.  However, CryptNET CKS does fully support PKS
+email based synchronization.</para>
+<para>In CKS this synchronization is controlled by a database table called
+other_servers.  This table contains the host names and email addresses of
+other servers as well as their preferred method of synchronization.
+</para>
+<para>
+To perform synchronization, you must currently schedule program runs in 
+CKS with the cron facility.  This can be done with the following entries:
+</para>
+<screen>
+0 * * * *  /usr/local/bin/cks_mail_util 2>&1 >> /dev/null
+</screen>
+<para>
+This cron entry will cause your keyserver to send all keys in cks_pending_sync
+to all systems listed at type CryptNET or PKS in the table cks_other_servers.
+</para>
+</chapter>
+<chapter id="monitoring">
+<title>Monitoring The Keyserver</title>
+<para>The keyserver makes use of log files define in <filename>cks.conf</filename>.  
+These files will contain any errors and warning associated with the various 
+programs which make up a fully functional keyserver.</para>
+</chapter>
+<chapter id="security">
+</chapter>
+<chapter id="disaster">
+<title>Backup and Disaster Recovery</title>
+<para>
+File system back should be sufficient for CKS.  However, if you are running an unusually
+active copy, you may want to depend upon database dumps.  Database dumps, may also be 
+useful in allowing you to synchronize your keyserver with other keyservers which are 
+on your LAN, or which wish to join the world wide network of public keyserver.  
+</para>
+<para>To support this type of replication, CKS offers the <application>cks_export</application>
+program.  This program will dump your database content into a series of files in the 
+PGP Keyrings format which can then be loaded by <application>cks_import</application>.
+</para>
+</chapter>
+<chapter id="upgrading">
+<title>Upgrading Your CKS Installation</title>
+<para>
+To upgrade your CKS installation, you will most often only have to recompile the programs
+and run the install script.  Installing updated binares will allow you to make use of 
+improved code.  Every effort is made not to make changes to the database schema of CKS.
+</para>
+</chapter>
+<appendix>
+<title>Appendix: Links To Additional Resources and References</title>
+<section id="rfc">
+<title>Related RFCs</title>
+<itemizedlist>
+<listitem>
+<para>
+<ulink url="http://cryptnet.net/mirrors/rfcs/rfc2440.txt">RFC2440: OpenPGP Message Format</ulink>
+</para>
+</listitem>
+</itemizedlist>
+</section>
+</appendix>
+<bibliography>
+<title>Citations and Referenced Works</title>
+<biblioentry>
+<title>RFC2440: OpenPGP Message Format</title>
+<authorgroup>
+<author><firstname>J.</firstname><surname>Callas</surname></author>
+<author><firstname>L.</firstname><surname>Donnerhacke</surname></author>
+<author><firstname>H.</firstname><surname>Finney</surname></author>
+<author><firstname>R.</firstname><surname>Thayer</surname></author>
+</authorgroup>
+<publisher>
+<publishername>IETF</publishername>
+</publisher>
+<pubdate>November 1998</pubdate>
+</biblioentry>
+</bibliography>
+<glossary>
+<title>Glossary of Terms</title>
+<glossdiv><title>E</title>
+
+<glossentry id="xml"><glossterm>Extensible Markup Language</glossterm>
+  <acronym>XML</acronym>
+<glossdef>
+  <para>Some reasonable definition here.</para>
+  <glossseealso otherterm="xml">See Also XML</glossseealso>
+</glossdef>
+</glossentry>
+</glossdiv>
+
+</glossary>
+</book>

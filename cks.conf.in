@@ -1,0 +1,109 @@
+# CryptNET Keyserver Configuration File
+#
+# This files contains all of the options in the
+# cks_config struct in the datastructures.h
+# header file.
+#
+# If the first character of a line is '#', the
+# line is ignored.  Also, all blank lines are
+# ignored.
+#
+# For more information about the options available,
+# please see the doc directory in the source code
+# distribution archive.
+
+# Options
+
+# IP number for cksd to bind to
+# MAXLEN [16]
+bind_ip 127.0.0.1
+
+# Port for cksd to bind to
+# MAXLEN [10]
+bind_port 11371
+
+# Which database are you using
+# postgres = 1
+# IBM DB2  = 2
+# GDBM     = 3
+# note only type 1, postgres is currently supported
+# MAXLEN = 1
+db_type = 1
+
+# IP number of machine that postgres is running on
+# MAXLEN [16]
+dbsrvr_ip 127.0.0.1
+
+# Port that postgres is running on
+# MAXLEN [10]
+dbsrvr_port 5432
+
+# Name of the database
+# MAXLEN [16]
+dbsrvr_db @DBNAME@
+
+# Should A Comment be displayed at all in ASCII armored PGP keys?
+# MAXLEN (integer)
+use_cmnt 1
+
+# Version of cksd Running
+# MAXLEN [101]
+vrsn Version:  CryptNET Keyserver Version 0.2.3
+
+# Comment displaced in ASCII armored PGP keys?
+# MAXLEN [201]
+cmnt Comment:  <a href="http://www.clearwaterproject.org/">http://www.clearwaterproject.org/</a>
+
+# Administrator Email Address (Displayed w/ Error Messages)
+# MAXLEN [101]
+adm_email root@localhost
+
+# Sync Email.  This is the email address CKS sends pks sync from
+# MAXLEN [101]
+sync_email pgp-keys@localhost
+
+# Should this keyserver accept version 2 pgp keys?
+# MAXLEN (integer)
+acpt_v2 1
+
+# Should this keyserver accept version 3 pgp keys?
+# MAXLEN (integer)
+acpt_v3 1
+
+# Max keys to return
+# MAXLEN (32bit integer)
+max_ret 1000
+
+# Max keys to return per ID
+# MAXLEN (32bit integer)
+key_ret 10
+
+# Max keys w/ duplicate ID to accept
+# MAXLEN (32bit integer)
+dup_acpt 10
+
+# Display a search link to the biglumber site
+# MAXLEN (32bit integer)
+biglumber 1
+
+# Attempt Off Network Fetch of Keys Not Found In DB
+# MAXLEN (32bit integer)
+aonf 1
+
+# Error log location for cksd and cks cgi scripts
+# MAXLEN [201]
+err_log cks_error.log
+
+# Error log file location for cks_mail_sync program
+# MAXLEN [201]
+mail_err_log cks_mail_error.log
+
+# Log file location for general log entries
+# MAXLEN [201]
+data_log cks_data.log
+
+# Fingerprints of pgpkeys to cache in memory
+# MAXLEN [42]
+cache 8BA2930CA628C4C6A144E8B2DFC88FD565CB4C37
+cache 0EC8B0E3052DFC4C208F76EBFA920973992A4B3F
+

@@ -1,0 +1,29 @@
+License
+-------
+This program is licensed under the terms of the GPL.  Please note that
+unless you state otherwise it will be assumed that you are surrendering
+the copywrite to any submitted patches.
+
+Component Programs
+------------------
+cksd:          cks daemon.  This program handles socket based hkp connections.
+add.cgi:       cgi script to handle key addition.
+search.cgi:    cgi script to handle searches.
+delete.cgi:    cgi script to delete keys.
+stats.cgi:     cgi script for some realtime db stats
+keyimg.cgi:    cgi script to display images from keys
+cks_sync:      program to sync with other nodes, schedule with cron.
+cks_mail_sync: program to sync with horowitz mail based keyservers.
+cks_export:    program for backing up database
+cks_import:    program for directly importing binary pgp keyrings
+
+Running an official node
+------------------------
+If you'd like to run an official node of the CryptNET keyserver network
+which syncs with other nodes on that network, please send me an email.
+
+Further Information
+-------------------
+For more information about administrating cks and the technical 
+documentation on the cks program, please see the contents of the
+doc directory.

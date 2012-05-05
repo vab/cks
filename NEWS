@@ -1,0 +1,34 @@
+2004.07.02  0.2.2 Release.
+  Feature Request Completed: [ 967140 ] Display images in pgp keys
+  Feature Request Completed: [ 967134 ] Make HTML compilant
+  Feature Request Completed: [ 979235 ] Support --version and -v w/ all progs
+  Feature Request Completed: [ 976828 ] Cache most frequently accessed                                         keys in memory (vab)
+  Fixed Bug: [ 977574 ] Offset Error in DB Table Iteration
+  Fixed Bug: [ 981254 ] Config is loaded twice in some places
+  Fixed Bug: [ 981307 ] ./configure error when prefix not specified
+  Fixed Bug: [ 979128 ] Very old PGP Keys Cause Server Error
+  Fixed Bug: [ 979233 ] ISC Key Cannot be parsed by CKS
+  Fixed Bug: [ 968930 ] realloc in escape single quotes causing crash on free
+  Fixed Bug: [ 968374 ] cks_import subpacket parse error segfault
+2004.06.21  0.2.0 Release.  New Features, Bug Fixes.
+2004.06.09  0.1.5 Release.  Major Bug Fixes.
+2004.06.01  Admin:  Move project to sourceforge.
+2003.05.28  0.1.4 Release.  New Features, Bug Fixes.
+2003.05.08  0.1.3 Release.  New Features, Bug Fixes.
+2003.05.01  Admin:  Moved project to CryptNET.
+2003.04.01  0.1.2 Release.  Minor bug fixes, new features.
+2002.09.30  0.1.1 Release.  Minor bug fixes, new features.
+2002.09.18  Admin:  Moved project to sourceforge.
+2002.03.24  0.1.0 Release.  Minor bug fixes, new features.
+2002.02.23  0.0.9 Release.  Minor bug fixes.
+2002.01.10  0.0.8 Release.  Major bug fixes.
+2001.12.13  0.0.7 Release.  Major bug fixes.
+2001.11.07  0.0.6 Release.  Fix for SQL injection vulnerability.
+2001.09.04  0.0.5 Release.  Major changes and many bug fixes.
+2001.07.28  Snapshot:  Not many changes.  DB Schema is incompatible as cksd
+            now stores key info in db.  The primary change was the addition
+	    of support for autoconf and automake
+2001.07.10  0.0.4 Release.  Major bugfixes.
+2001.06.28  0.0.3 Release.  Major bugfixes.
+2001.06.19  0.0.2 Release.  Major Feature Expansion.
+2001.05.02  0.0.1 Release.  Initial Release.

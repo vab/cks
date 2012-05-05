@@ -1,0 +1,140 @@
+Installations of CKS
+--------------------
+WARNING: CKS is alpha software DO NOT RUN THE CKSD SERVER AS ROOT!
+
+This is much harder than it has to be.  Basically, you need to do
+allot of stuff by hand which I'll hopefully automake with 'make
+install' before the final beta is released.
+
+Compiling the programs: 
+-----------------------
+Put the IP and db info in the cks_config.c file or copy cks.conf
+in the software archive into /usr/local/etc and edit that file.
+run ./configure;make
+(Do not run make install)
+
+Setting up the database:
+------------------------
+You need to have postgresql installed in order to run cks.  While
+cks will function with versions of postgres less that 7.2, I highly
+recommend that you run with 7.2 because of the modifications that
+where made to the way vacuum analyze works.
+
+Make sure you have 2x as much free space on your disk as you have
+used by your database.  You will need this for Write Ahead Logging
+(WAL).
+
+Getting Postgres Running:
+You will need to connectly set up your hba.conf.
+
+If you're running RedHat, you'll most likely want to 
+add the following to your postgres start script in 
+/etc/rc.d/init.d/postgresql:   -o '-i' 
+which will cause postgresql to autostart in ip 
+listenting mode. 
+
+Steps to setting up the database:
+
+change user to web server user in cks.sql
+change your own user id if you'd like to do testing in cks.sql
+create db called openpgp_keys and pguser named for your web server user
+run cks.sql in psql
+
+It is recommeded that you create an account called keyserver to 
+run your keyserver and related cron jobs under.  This account 
+will allow you to run your cks software in standard user space.
+
+If you want to sink with a pks based network (horowitz protocol):
+You can either point a mail alias from the pgp-keys account 
+that pks expects, create a pgp-keys account to run the 
+cks_mail_sync program under (add add appropriate account
+creation and privliges in cks.sql), or you can provide the
+email address of keyserver.  
+
+Setting up the server:
+---------------------
+For the following programs:
+
+CGI Programs:
+add
+search
+cks_keyimg
+
+Admin Programs:
+delete
+search
+stats
+sync_manage
+
+CKS Programs:
+cks_backup
+cks_import
+cks_mail_util
+cks_mail_sync
+cks_sync
+cksd
+
+To Install:
+
+1. Rename the CGI Programs and the Admin Programs to append
+   .cgi suffixes
+2. Copy the contents of the html directory under your htdoc
+   root
+3. Copy CGI programs with execute permissions under html dir
+   under htdoc root.
+4. Copy Admin programs with execute permissions under html/admin
+   dir under htdoc root.
+5. Grant permissions from cks.sql to user who will run cksd
+   server.
+6. Run the cksd server program nohup.
+
+If you have problems connecting to postgres, check to make
+sure that you started postgres with the '-i' option to allow
+network connections to the postmaster daemon.
+
+
+Maintaining the Database:
+-------------------------
+You should run vacuum analyze on the tables every night via cron.
+
+
+Setting up the Synchronization:
+-------------------------------
+
+out going syncs:
+
+Contact vab@cryptnet.net for servers to sync with.  Then 
+move cks_sync to the directory of an SQL authorized user.
+Schedule it to run it cron and send out sync emails.  An
+example cron sync entry is as follows:
+
+5,10,15,20,25,30,35,40,45,50,55 * * * * /home/keyserver/bin/cks_mail_util
+
+This will run the program once every five minutes.
+
+incoming syncs:
+
+Move cks_mail_sync to /home/keyserver/bin
+
+create a .forward file with the contents: "|cks_mail_sync" and make
+sure the perms on the forward file are 0700 (-rwx------).   
+
+make a symlink in /etc/smrsh from /home/keyserver/bin/cks_mail_sync
+
+tell people your sync address is keyserver@(your keyserver).
+
+delete any messages that cause segfaults from your mailq every once
+in a while and send them to me (vab@cryptnet.net) so that I can 
+debug cks.  There aren't many messages any more that i've seen.
+Don't leave these in the queue, they can throttle your cpu.
+
+---
+REMEMBER DO NOT RUN THE CKSD SERVER AS ROOT AND PATCH ANY VULNERABILITES
+ON YOUR SYSTEM THAT COULD ALLOW A LOCAL SHELL TO ESCELATE PRIVS TO ROOT.
+
+email vab@cryptnet.net for help with install or any questions.
+
+P.S. DO NOT RUN THE CKSD SERVER AS ROOT.
+
+
+

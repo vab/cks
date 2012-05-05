@@ -1,0 +1,70 @@
+<HTML><HEAD><TITLE>Design Documentation</TITLE></HEAD>
+<BODY BGCOLOR=#FFFFFF>
+<CENTER><H1>Design Documentation</H1></CENTER>
+<HR SIZE=1 WIDTH=100%>
+<H3>Database Design</H3>
+
+<P>The fingerprint of the public key is the primary key in almost all
+of the database tables.  The exception is the UID table since there
+can clearly be many UIDs per public key.  While the fingerprint is
+not guaranteed to be unique, a fingerprint collision is sufficiently
+unlikely to require an alternative primary key strategy.  When the
+use of the full fingerprint is not ideal, the full keyid (in the case
+of openPGP version 4 keys) is used.  I have attempted to avoid using
+the keyid as at least one collision is already known to exist in the
+keyring.
+
+<P>There is a great deal of duplication of key information in the database
+in the interest of query and key retrieval speed.  Originally, I had
+considered breaking the key material into packets and storing individual
+packets in database tables thereby eliminating almost all data duplication.
+However, this proved to be very inefficient.  It was very labor intensive
+to retrieve all of the packets, reassemble them correctly, fingerprint
+them, radix encode them, checksum them, and finally format them into an
+ASCII armored public key for client download.  A much more optimized
+solution was necessary.
+
+<P>I have found the best database design to include the storage of the
+full radix encoded data, the radix checksum, and all of the associated
+user and key ids.  This allows me to have keyid, full keyid, fingerprint,
+and uids available for querying against without doing and packet
+processing for hashing.  It also allows the very rapid construction of
+the ASCII public for the client through the concatenation of the stored
+radix encoded data, the radix checksum, and the header information
+in the cks_config struct datastructure.  The additional storage
+requirements are not great due to the fact that most of the duplicated
+data is hashes which are not truly duplicated by really pre-generated
+and flags about the key.
+
+<P>The most critical factor of the design which allows for a great
+performace improvements of the traditional keyring method or a
+relationalized traditional keyring storage method is that I can
+provide the summary results of queries which return more than one
+key with out processing any key information.  This total reliance
+on the RDBMS is clearly beneficial.  Another great benefit of the
+design is the ability to do joins based on directly equated full
+keyid, and keyid.  This allows me to provide a UID for a signing
+keyid through a single query which allows sub 1 second result
+times on a fast system with keys with as many as 20 signatures.
+
+<P>The only future expansion I see a need for in the near future is the
+addition of a table, or group of tables, to support subkey id and
+information storage and querying.
+
+<P>A possible future optimization of the database was the suggestion
+of John Goerzen to store keyids, full keyids, and possibly fingerprints
+as integers rather than char format hex representations.  I'm still
+considering the implications of this on the other code and the
+performance and storage gains which would result.
+
+<H3>Database Access Programs</H3>
+
+<P>Eventually all of the cgi programs will be folded into the cksd daemon
+(version 2.0.0 or 3.0.0). Since pthreads support has not yet been
+implemented there is limited benefit to the use of a monolithic daemon.
+In the short term, the cgi programs have been made available.  The cgi
+programs make development and debugging easier.
+
+<HR SIZE=1 WIDTH=100%>
+<CENTER><H6>VAB</H6></CENTER>
+</BODY></HTML>

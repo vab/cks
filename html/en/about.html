@@ -1,0 +1,79 @@
+<html><head><title>CryptNET Public Key Server</title></head>
+<body bgcolor="#FFFFFF">
+<center><h1>CryptNET Public Key Server</h1></center>
+<hr size="0" width="100%">
+<center>
+[ <a href="index.html">Search</a> ]
+[ <a href="add.html">Add A Public Key</a> ]
+[ <a href="advsrch.html">Advanced Search</a> ]
+[ <a href="sign.html">Server Key Signing</a> ]<br>
+[ <a href="stats/">Server Statistics</a> ]
+[ <a href="keystats.html">Key Statistics</a> ]
+[ <a href="wot.html">Web Of Trust Information</a> ]
+[ <a href="help.html">Help</a> ]
+[ <a href="about.html">About CKS</a> ]
+</center>
+<hr size="1" width="100%">
+<center><h2>Version: 0.1.5 (alpha)</h2></center>
+<center><h3><font color="RED">This is ALPHA software.</h3></font></center>
+<p>A release date for a beta version has not yet be set.  Beta version
+will be first source code release.</p>
+<hr size="1" width="100%">
+<p>The CryptNET Public KeyServer is Free Software, available under the
+terms of the <a href="http://www.fsf.org/copyleft/gpl.html">GNU General Public
+License (Version 2)</a>. You may freely download, distribute, use and modify or
+improve the software in accord with the terms of the GPL.  Patches, questions,
+comments or suggestions may be sent to the author, <a href="http://cryptnet.net/people/vab/">V. Alex Brennen</a> [<a href="mialto:vab@cryptnet.net">vab@cryptnet.net</a>].</p>
+
+<p>The keyserver is <a href="http://cryptnet.net/mirrors/rfcs/rfc2440.txt">RFC2440</a> (openPGP)
+compliant.  It consists of a series of CGI scripts written in C for the linux
+platform.  The scripts include bindings to the <A
+HREF="http://www.postgresql.org/">Postgres</a> relational database system.</p>
+
+<p>The CryptNET keyserver source code lives at <a href="http://cryptnet.net/fsp/cks/index.html">http://cryptnet.net/fsp/cks/index.html</a></p>
+<br></br>
+<hr size="1" width="100%">
+<center><h2><u>Release Plans</u></h2></center>
+<hr size="1" width="100%">
+<center><h3>Version: 0.2.5 (Beta Release)</h3></center>
+<b>Features:</b>
+<ul>
+<li>openPGP (RFC2440) compatible (version 3 and version 4 packets)</li>
+<li>Allow users to submit and retrieve keys through web browser</li>
+<li>Tied to RDBMS (postgreSQL) for storage</li>
+<li>pks protocol support</li>
+<li>Capable of updating previously stored keys (Proper key material merges)</li>
+<li>Capable of handling key expiration and revocation</li>
+<li>Synchronize with other keyservers through (HTTP) PKS protocol</li>
+<li>Searches by UID, 4 byte keyid, 8 byte keyid and full fingerprint</li>
+</ul>
+<hr size="1" width="100%">
+<center><h3>Version: 1.0.0</h3></center>
+<b>New Features:</b>
+<ul>
+<li>None. This will be stabilized beta.</li>
+</ul>
+<hr size="1" width="100%">
+<center><h3>Version: 2.0.0</h3></center>
+<b>New Features:</b>
+<ul>
+<li>Cryptographically validate signatures</li>
+<li>Handle signature expiration</li>
+<li>Allow users to submit and receive openPGP data which contains more than one public key</li>
+</ul>
+<hr size="1" width="100%">
+<center><h3>Version: 3.0.0</h3></center>
+<b>New Features:</b>
+<ul>
+<li>Fully Multi-Threaded (w/Pthreads)</li>
+<li>Dynamic key caching of commonly accessed keys (ex: keys used in signature of posts to BUGTRAQ)</li>
+<li>Binary socket based synchronization protocol</li>
+<li>Peer storage/distributed search (kind of like DNS)</li>
+</ul>
+<hr size="1" width="100%">
+<center>
+<a href="http://cryptnet.net/">CryptNET:</a>
+ <a href="http://cryptnet.net/fsp/">FSP:</a>
+ <a href="http://cryptnet.net/fsp/cks/">CKS</a>
+</center>
+</body></html>

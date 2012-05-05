@@ -1,0 +1,138 @@
+#!/usr/bin/perl -Tw
+
+# Copyright (C) 2002, 2003, 2004 Simon Josefsson
+
+# Author: Simon Josefsson <simon@josefsson.org>
+# Keywords: security, OpenPGP, keyserver, DNS
+
+# This file is part of CKS.
+
+# CKS is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+
+# CKS is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with CKS; see the file COPYING.  If not, write to the
+# Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+
+use strict;
+use Net::DNS;
+use Net::DNS::RR::CERT;
+use Net::DNS::Nameserver;
+use DBI;
+use DBD::Pg;
+use Sys::Hostname;
+use Socket;
+use Getopt::Long;
+
+# Parse command line parameters.
+my $DNSLocalPort = 53;
+my $Verbose = 0;
+my $DBname = "pgp_keys";
+my $DBuser = "httpd";
+my $DBpassword = "";
+my $ListenAddress = "";
+GetOptions ("port=i" => \$DNSLocalPort,
+	    "listen=s" => \$ListenAddress,
+	    "verbose"  => \$Verbose,
+	    "db=s" => \$DBname,
+	    "user=s" => \$DBuser);
+
+$ListenAddress = $1 if ($ListenAddress =~ /^([0-9.]+)$/);  # untaint
+
+if ($Verbose) {
+    print '$Id: cks-dns,v 1.16 2004/06/12 16:14:15 jas4711 Exp $' . "\n";
+    print "Net::DNS $Net::DNS::VERSION\n";
+    print "port=$DNSLocalPort database=$DBname user=$DBuser\n";
+}
+
+# Create nameserver object, and connect to database.
+my $ns = Net::DNS::Nameserver->new (LocalPort    => $DNSLocalPort,
+				    ReplyHandler => \&reply_handler,
+				    LocalAddr    => $ListenAddress,
+				    Verbose      => $Verbose);
+die "Cannot create Net::DNS::Nameserver object" if !$ns;
+
+my $dbh = DBI->connect("dbi:Pg:dbname=$DBname", $DBuser, $DBpassword,
+		       { RaiseError => 1, AutoCommit => 0 });
+
+# Find out who we are.
+my $IP = $ListenAddress || inet_ntoa(scalar gethostbyname(hostname));
+
+sub reply_handler {
+    my ($qname, $qclass, $qtype) = @_;
+    my ($rcode, @ans, @auth, @add);
+    my ($ttl) = (3600);
+
+    print scalar localtime, "\n" if $Verbose;
+
+    if ($qclass eq "IN" && $qtype eq "A") {
+	push @ans, Net::DNS::RR->new("$qname $ttl $qclass $qtype $IP");
+	return ("NOERROR", \@ans, \@auth, \@add);
+    }
+
+    $_ = $qname;
+    m,^(0x)?([a-fA-F0-9]+),;
+    my $keyid = uc $2;
+
+    print "keyid $keyid\n" if $Verbose;
+
+    return ("NOERROR", \@ans, \@auth, \@add)
+	unless ($qclass eq "IN" && $qtype eq "CERT");
+
+    my @fps = $dbh->selectrow_array
+      ("SELECT fp FROM cks_keyid_table WHERE key_id = '$keyid'");
+
+    return ("NXDOMAIN", \@ans, \@auth, \@add)
+	if (!defined $fps[0]);
+
+    my $fp = $fps[0];
+
+    print "fingerprint $fp\n" if $Verbose;
+
+    my @oids = $dbh->selectrow_array
+      ("SELECT ecsum, pgp_key FROM cks_fp_key_table WHERE fp = '$fp'");
+
+    return ("NXDOMAIN", \@ans, \@auth, \@add)
+      if (!defined $oids[0] || !defined $oids[1]);
+
+    my ($ecsum) = $oids[0];
+    my ($oid) = $oids[1];
+
+    print "ecsum $ecsum\n" if $Verbose;
+    print "oid $oid\n" if $Verbose;
+
+    my $lobj_fd = $dbh->func($oid, $dbh->{pg_INV_READ}, 'lo_open');
+
+    my $nbytes;
+    my $buf = "";
+    my $key = "";
+    do {
+      $nbytes = $dbh->func($lobj_fd, $buf, 8192, 'lo_read');
+      $key = $key . $buf;
+    } while ($nbytes > 0);
+
+    die "Could not lo_close $lobj_fd\n"
+      if (!$dbh->func($lobj_fd, 'lo_close'));
+
+    my ($rdata) = "PGP 0 0 $key";
+    my ($rr) = "$qname $ttl $qclass $qtype $rdata";
+
+    print "rr $rr\n" if $Verbose;
+
+    push @ans, Net::DNS::RR->new($rr);
+
+    return ("NOERROR", \@ans, \@auth, \@add);
+}
+
+# main
+
+$ns->main_loop;
+$dbh->disconnect;

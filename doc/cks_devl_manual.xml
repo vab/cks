@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE article PUBLIC '-//OASIS//DTD DocBook XML V4.2//EN' "http://oasis-open.org/docbook/xml/4.2/docbookx.dtd"[]>
+
+<book lang="en">
+<title>CryptNET Keyserver Developer's Manual</title>
+<author>
+<firstname>V. Alex</firstname>
+<surname>Brennen</surname>
+<affiliation>
+<address><email>vab@cryptnet.net</email></address>
+</affiliation>
+</author>
+<pubdate>2004-05-28</pubdate>
+<revhistory>
+	<revision>
+		<revnumber>0.1.5</revnumber>
+		<date>2004-06-03</date>
+		<authorinitials>VAB</authorinitials>
+		<revremark>Initial Release.</revremark>
+	</revision>
+</revhistory>
+<chapter id="intro">
+<title>Introduction to the CryptNET Keyserver</title>
+<para>
+</para>
+</chapter>
+<chapter id="standards">
+<title>Implemented Standards</title>
+<para>
+The primary standard implemented by CKS is RFC2440, the openPGP standard.
+</para>
+</chapter>
+<chapter id="code">
+<title>Source Code Layout</title>
+<para>
+</para>
+</chapter>
+<chapter id="datastruct">
+<title>Data Structures</title>
+<para>
+</para>
+</chapter>
+<chapter id="participating">
+<title>Officially Participating in the Project</title>
+<para>
+To officially participate in the project, you should set up an account on SourceForge.  The CVS tree for CKS is hosted there.  Initially, email patches to the project manger, currently VAB.  After you have demonstrated coding ability, an understanding of the long term goals of the project, and demonstrated a dedicated level of effort to the project, you can ask for write access to the CVS tree.
+</para>
+</chapter>
+<appendix>
+</appendix>
+<bibliography>
+</bibliography>
+<glossary>
+<title>Glossary of Terms</title>
+<glossdiv><title>E</title>
+
+<glossentry id="xml"><glossterm>Extensible Markup Language</glossterm>
+  <acronym>XML</acronym>
+<glossdef>
+  <para>Some reasonable definition here.</para>
+  <glossseealso otherterm="sgml">
+</glossdef>
+</glossentry>
+</glossdiv>
+
+</glossary>
+</book>
