@@ -21,7 +21,7 @@
 #include "cks_config.h"
 
 
-int init_config(struct cks_config **config, int load_cache)
+int init_config(struct cks_config **config)
 {
 	int read_conf = 1;
 	int rslt = 0;
@@ -47,18 +47,17 @@ int init_config(struct cks_config **config, int load_cache)
         strncpy((*config)->err_log,"cks_error.log",200);
         strncpy((*config)->mail_err_log,"/home/pgp-keys/cks_mail_sync.log",200);
         strncpy((*config)->data_log,"cks_data.log",200);
-	(*config)->cache = NULL;
 
 	/* If you copy your config into the source code it will speed things up */
 	if(read_conf)
         {
-		rslt = read_config(&(*config),load_cache);
+		rslt = read_config(&(*config));
 	}
 
         return rslt;
 }
 
-int read_config(struct cks_config **config,int load_cache)
+int read_config(struct cks_config **config)
 {
 	/* Read and parse cks.conf data. */
         /* Load data into cks_config struct */
@@ -171,17 +170,6 @@ int read_config(struct cks_config **config,int load_cache)
                         {
         			strncpy((*config)->data_log,value,200);
         		}
-			else if(memcmp(name,"cache",5) == 0)
-			{
-				if(load_cache == 1)
-				{
-					rslt = add_cache_node(&((*config)->cache),value);
-					if(rslt == -1)
-					{
-						fprintf(stderr,"Failed to add cache node for %s.\n",value);
-					}
-				}
-			}
                         else
                         {
                         	fprintf(stderr,_("cks_config:  Rejected config var: %s\n"),name);
@@ -194,31 +182,5 @@ int read_config(struct cks_config **config,int load_cache)
 
 
         return 0;
-}
-
-
-int add_cache_node(struct d_linked_list **cache,char *fp)
-{
-	struct d_linked_list *new_list = NULL;
-	int rslt = 0;
-
-
-	new_list = new_dll_node(fp,(strlen(fp)+1),NULL,0);
-	if(new_list == NULL)
-	{
-		fprintf(stderr,"Failed to create new node.\n");
-
-		return -1;
-	}
-
-	rslt = add_dll_item(&(*cache),new_list);
-	if(rslt == -1)
-	{
-		fprintf(stderr,"Failed to add node to cache.\n");
-
-		return -1;
-	}
-
-	return 0;
 }
 

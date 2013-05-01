@@ -2,7 +2,7 @@ bin_PROGRAMS = cksd cks_sync cks_mail_sync cks_import cks_export add search sync
 
 INCLUDES = $(PKG_CPPFLAGS)
 
-cksd_SOURCES = cksd.c cksd.h db.c db.h cgi.c cgi.h datastructures.c datastructures.h parse.c parse.h radix.c radix.h std_types.c std_types.h md5.c md5.h sha.c sha.h keys.c keys.h merge_keys.c merge_keys.h retrieve.c retrieve.h cks_config.c cks_config.h cks_socket.c cks_socket.h cks_xml.c cks_xml.h cks_ldap.c cks_ldap.h cks_log.c cks_log.h bithelp.h types.h cks_cache.c cks_cache.h cks_debug.c cks_debug.h cks_constants.h common.h
+cksd_SOURCES = cksd.c cksd.h db.c db.h cgi.c cgi.h datastructures.c datastructures.h parse.c parse.h radix.c radix.h std_types.c std_types.h md5.c md5.h sha.c sha.h keys.c keys.h merge_keys.c merge_keys.h retrieve.c retrieve.h cks_config.c cks_config.h cks_socket.c cks_socket.h cks_xml.c cks_xml.h cks_log.c cks_log.h bithelp.h types.h cks_debug.c cks_debug.h cks_constants.h common.h
 cksd_LDADD = -lpq
 
 cks_sync_SOURCES = cks_sync.c cks_sync.h db.c db.h cks_config.c cks_config.h parse.c parse.h radix.c radix.h cgi.c cgi.h md5.c md5.h sha.c sha.h keys.c keys.h datastructures.c datastructures.h retrieve.c retrieve.h std_types.c std_types.h cks_socket.c cks_socket.h bithelp.h types.h merge_keys.c cks_debug.c cks_debug.h cks_constants.h common.h

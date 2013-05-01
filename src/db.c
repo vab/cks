@@ -201,34 +201,3 @@ int postgres_db_disconnect(PGconn *conn)
 	return 0;
 }
 
-
-/*
- * Using LDAP
- */
-
-int ldap_db_connect(void *conn, struct cks_config *config)
-{
-
-	return 0;
-}
-
-
-int ldap_db_query(void *query)
-{
-
-	return 0;
-}
-
-
-int ldap_db_stmt(void *stmt, struct cks_config *config)
-{
-
-	return 0;
-}
-
-
-int ldap_db_disconnect(void *conn)
-{
-
-	return 0;
-}

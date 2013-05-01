@@ -27,11 +27,6 @@
 /*  Postgres is the default until we support more types. */
 #define POSTGRES 1
 
-#ifdef LDAP
-/* LDAP */
-#include <ldap.h>
-#endif
-
 /* Postgres */
 #ifdef POSTGRES
 #include "libpq-fe.h"
@@ -76,16 +71,6 @@ int postgres_db_stmt(PGconn *, char *stmt, struct cks_config *config);
 int postgres_db_begin_transaction(PGconn *conn);
 int postgres_db_commit_transaction(PGconn *conn);
 int postgres_db_disconnect(PGconn *conn);
-
-
-/*
- * Functions Specific to LDAP
- */
-
-int ldap_db_connect(void *conn, struct cks_config *config);
-int ldap_db_query(void *query);
-int ldap_db_stmt(void *stmt, struct cks_config *config);
-int ldap_db_disconnect(void *conn);
 
 
 /*

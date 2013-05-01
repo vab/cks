@@ -71,7 +71,7 @@ int     main(int argc,char *argv[])
 		return -1;
 	}
 
-	result = init_config(&config,1);
+	result = init_config(&config);
 	if(result == -1)
 	{
 		fprintf(stderr,_("Non-Fatal Error: Failed to read config."));
@@ -144,25 +144,6 @@ int     main(int argc,char *argv[])
 	srvr_addr = (char *)config->bind_ip;
 	srvr_port = (char *)config->bind_port;
 
-	/* Make the DB Connection. */
-	conn = db_connect(config);
-	if(conn == NULL)
-	{
-		fprintf(stderr,"Failed to connect to the db.\n");
-
-		return -1;
-	}
-	result = load_cache(conn,&(config->cache));
-	if(result == -1)
-	{
-		/* failed to load cks cache */
-		fprintf(stderr,"Failed to load the cks_cache\n");
-	}
-	if(conn != NULL)
-	{
-		PQfinish(conn);
-	}
-
 	s = socket(PF_INET,SOCK_STREAM,0);
 	if(s == -1)
 	{
@@ -183,7 +164,6 @@ int     main(int argc,char *argv[])
 	{
 		syslog(LOG_ERR,_("cksd:  Bind call failed."));
 		syslog(LOG_ERR,_("cksd:  Fatal Error"));
-		free_cache(&(config->cache));
 		if(config != NULL)
 		{
 			free(config);
@@ -196,7 +176,6 @@ int     main(int argc,char *argv[])
 	{
 		syslog(LOG_ERR,_("Unexpected error when attempting to listen"));
 		syslog(LOG_ERR,_("Fatal Error"));
-		free_cache(&(config->cache));
 		if(config != NULL)
 		{
 			free(config);
@@ -297,7 +276,6 @@ int     main(int argc,char *argv[])
 		}
 	}
 
-	free_cache(&(config->cache));
 	if(config != NULL)
 	{
         	free(config);
@@ -692,86 +670,82 @@ int  retrieve_key_from_db(int c, unsigned char *key_id, struct cks_config *confi
 	struct openPGP_pubkey *key_result = NULL;
 
 
-	key_result = search_cache(config->cache,key_id);
+	/* Make the DB Connection. */
+	conn = db_connect(config);
+	if(conn == NULL)
+	{
+		fprintf(stderr,"Failed to connect to the db.\n");
+
+		return -1;
+	}
+
+	strtoupper(key_id);
+	memset(stmt,0x00,255);
+	if(strlen(key_id) == 8)
+	{
+		snprintf(stmt,150,"select key_id,fkey_id,fp from cks_keyid_table where key_id = '%s'", key_id);
+		#ifdef DEBUG
+			printf("%s\n",stmt);
+		#endif
+	}
+	else if(strlen(key_id) == 16)
+	{
+		snprintf(stmt,150,"select key_id,fkey_id,fp from cks_keyid_table where fkey_id = '%s'", key_id);
+		#ifdef DEBUG
+			printf("%s\n",stmt);
+		#endif
+	}
+	else if((strlen(key_id) == 32) || (strlen(key_id) == 40))
+	{
+		snprintf(stmt,150,"select key_id,fkey_id,fp from cks_keyid_table where fp = '%s'", key_id);
+		#ifdef DEBUG
+			printf("%s\n",stmt);
+		#endif
+	}
+	else
+	{
+		printf("Bad len %s, %d.\n",key_id,strlen(key_id));
+		db_disconnect(conn);
+
+		return -1;
+	}
+
+	result = PQexec(conn, stmt);
+	if(PQresultStatus(result) != PGRES_TUPLES_OK)
+	{
+		log_err(_("cksd:  Non-Fatal Error."),0,config);
+		log_err("cksd:  ",0,config);
+		log_err(_("cksd:  Command didn't return tuples properly"),0,config);
+		PQclear(result);
+		db_disconnect(conn);
+
+		return -1;
+	}
+	if(PQntuples(result) == 0)
+	{
+		write_line_to_socket(c,"HTTP/1.0 200 OK\n");
+		write_line_to_socket(c,"Content-type: text/html\n\n");
+		write_line_to_socket(c,"<html><head>\n");
+		write_line_to_socket(c,_("<title>CryptNET Public Key Server -- Error</title>\n"));
+		write_line_to_socket(c,"</head><body>\n");
+		write_line_to_socket(c,_("<h1>CryptNET Public Key Server -- Error</h1>\n"));
+		write_line_to_socket(c,_("Sorry, no matching keys where found in the database.\n"));
+		write_line_to_socket(c,"</body></html>\n");
+
+		PQclear(result);
+		db_disconnect(conn);
+
+		return -1;
+	}
+	key_result = (struct openPGP_pubkey *)retrieve_pubkey(conn,PQgetvalue(result,0,2),D_SOURCE_CKSD);
 	if(key_result == NULL)
 	{
-		/* Make the DB Connection. */
-		conn = db_connect(config);
-		if(conn == NULL)
-		{
-			fprintf(stderr,"Failed to connect to the db.\n");
+		log_err("failed to ret key.",0,config);
+		log_err(PQgetvalue(result,0,2),0,config);
+		PQclear(result);
+		db_disconnect(conn);
 
-			return -1;
-		}
-
-		strtoupper(key_id);
-		memset(stmt,0x00,255);
-		if(strlen(key_id) == 8)
-		{
-			snprintf(stmt,150,"select key_id,fkey_id,fp from cks_keyid_table where key_id = '%s'", key_id);
-			#ifdef DEBUG
-				printf("%s\n",stmt);
-			#endif
-		}
-		else if(strlen(key_id) == 16)
-		{
-			snprintf(stmt,150,"select key_id,fkey_id,fp from cks_keyid_table where fkey_id = '%s'", key_id);
-			#ifdef DEBUG
-				printf("%s\n",stmt);
-			#endif
-		}
-		else if((strlen(key_id) == 32) || (strlen(key_id) == 40))
-		{
-			snprintf(stmt,150,"select key_id,fkey_id,fp from cks_keyid_table where fp = '%s'", key_id);
-			#ifdef DEBUG
-				printf("%s\n",stmt);
-			#endif
-		}
-		else
-		{
-			printf("Bad len %s, %d.\n",key_id,strlen(key_id));
-			db_disconnect(conn);
-
-			return -1;
-		}
-
-		result = PQexec(conn, stmt);
-		if(PQresultStatus(result) != PGRES_TUPLES_OK)
-		{
-			log_err(_("cksd:  Non-Fatal Error."),0,config);
-			log_err("cksd:  ",0,config);
-			log_err(_("cksd:  Command didn't return tuples properly"),0,config);
-			PQclear(result);
-			db_disconnect(conn);
-
-			return -1;
-		}
-		if(PQntuples(result) == 0)
-		{
-			write_line_to_socket(c,"HTTP/1.0 200 OK\n");
-			write_line_to_socket(c,"Content-type: text/html\n\n");
-			write_line_to_socket(c,"<html><head>\n");
-			write_line_to_socket(c,_("<title>CryptNET Public Key Server -- Error</title>\n"));
-			write_line_to_socket(c,"</head><body>\n");
-			write_line_to_socket(c,_("<h1>CryptNET Public Key Server -- Error</h1>\n"));
-			write_line_to_socket(c,_("Sorry, no matching keys where found in the database.\n"));
-			write_line_to_socket(c,"</body></html>\n");
-
-			PQclear(result);
-			db_disconnect(conn);
-
-			return -1;
-		}
-		key_result = (struct openPGP_pubkey *)retrieve_pubkey(conn,PQgetvalue(result,0,2),D_SOURCE_CKSD);
-		if(key_result == NULL)
-		{
-			log_err("failed to ret key.",0,config);
-			log_err(PQgetvalue(result,0,2),0,config);
-			PQclear(result);
-			db_disconnect(conn);
-
-			return -1;
-		}
+		return -1;
 	}
 
 	/*  Return key information to querying client */
@@ -862,3 +836,4 @@ void sig_chld(int signo)
 
 	return;
 }
+

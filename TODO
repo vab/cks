@@ -38,7 +38,6 @@ SD Interface
 Way to sync rejected with other hosts
 Search for "only version x keys" options
 Signature Validation
-LDAP Support
 Reject packets rathern than keys outright
 
 

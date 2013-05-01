@@ -184,8 +184,6 @@ struct cks_config
 	unsigned char err_log[201];
 	unsigned char mail_err_log[201];
 	unsigned char data_log[201];
-
-	struct d_linked_list *cache;
 };
 
 struct linked_list

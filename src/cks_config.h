@@ -26,12 +26,9 @@
 #include "datastructures.h"
 
 
-int init_config(struct cks_config **,int);
-int read_config(struct cks_config **,int);
-int add_cache_node(struct d_linked_list **,char *);
+int init_config(struct cks_config **);
+int read_config(struct cks_config **);
 
 /* Globals */
 #define D_POSTGRES  1
-#define D_DB2       2
-#define D_GDBM      3
-#define D_LDAP      4
+

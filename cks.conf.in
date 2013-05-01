@@ -102,8 +102,3 @@ mail_err_log cks_mail_error.log
 # MAXLEN [201]
 data_log cks_data.log
 
-# Fingerprints of pgpkeys to cache in memory
-# MAXLEN [42]
-cache 8BA2930CA628C4C6A144E8B2DFC88FD565CB4C37
-cache 0EC8B0E3052DFC4C208F76EBFA920973992A4B3F
-

@@ -40,7 +40,6 @@
 #include "merge_keys.h"
 #include "cks_config.h"
 #include "cks_socket.h"
-#include "cks_cache.h"
 #include "retrieve.h"
 #include "cks_log.h"
 #include "radix.h"
@@ -68,3 +67,4 @@ int parse_get_request(int , unsigned char *, struct cks_config *);
 int send_header(int, unsigned char *);
 int send_footer(int);
 int retrieve_key_from_db(int, unsigned char *, struct cks_config *);
+

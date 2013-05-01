@@ -1,3 +1,8 @@
+Version 0.2.5
+-------------
+Remove LDAP support
+Remove memory cache support
+
 Version 0.2.4
 -------------
 Revert v0.2.2 pthreads changes.
