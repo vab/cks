@@ -58,7 +58,7 @@ int main(void)
 
 		return -1;
 	}
-	rslt = init_config(&config,0);
+	rslt = init_config(&config);
 	if(rslt == -1)
 	{
 		fprintf(stderr,_("cks_add:  Non-Fatal Error: Failed to read config.\n"));
@@ -144,14 +144,27 @@ int main(void)
 		return -1;
 	}
 
-	fread(content,1,content_length,stdin);
+	rslt = fread(content,1,content_length,stdin);
+	if(rslt == 0)
+	{
+	    do_error_page(_("Error reading content."));
+	    if(content != NULL)
+	        free(content);
+	    if(config != NULL)
+	        free(config);
+	
+	    return -1;
+	}
 	hex_to_ascii(content);
 
 	/* Test value for SQL injection */
 	if( (strchr(content, '\'') != NULL) || (strchr(content, ';') != NULL) )
 	{
 		do_error_page(_("The characters ' and ; are currently not allowed in queries."));
-		free(config);
+		if(content != NULL)
+		    free(content);
+		if(config != NULL)
+		    free(config);
 
 		return -1;
 	}

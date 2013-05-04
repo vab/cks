@@ -704,7 +704,7 @@ int  retrieve_key_from_db(int c, unsigned char *key_id, struct cks_config *confi
 	}
 	else
 	{
-		printf("Bad len %s, %d.\n",key_id,strlen(key_id));
+		printf("Bad len %s, %d.\n",key_id,(int)strlen(key_id));
 		db_disconnect(conn);
 
 		return -1;

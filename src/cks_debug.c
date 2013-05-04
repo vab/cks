@@ -135,9 +135,9 @@ void dump_pubkey_packet_info_stderr(struct openPGP_pubkey *pubkey)
         walk_packet = pubkey->packet_list;
         while(walk_packet != NULL)
         {
-		fprintf(stderr,"Packet Type: %0.2x\n",walk_packet->packet_id);
+		fprintf(stderr,"Packet Type: %.2x\n",walk_packet->packet_id);
 		echo_packet_type(walk_packet->packet_id);
-		fprintf(stderr,"Packet Length: %d\n",walk_packet->len_bytes);
+		fprintf(stderr,"Packet Length: %lu\n",walk_packet->len_bytes);
 
 		walk_packet=walk_packet->next;
 	}
@@ -155,7 +155,7 @@ void dump_packet_info_stderr(struct openPGP_packet *packet_list)
         while(walk_packet != NULL)
         {
 		fprintf(stderr,"Packet Type: %.x2\n",walk_packet->packet_id);
-		fprintf(stderr,"Packet Length: %d\n",walk_packet->len_bytes);
+		fprintf(stderr,"Packet Length: %lu\n",walk_packet->len_bytes);
 		fprintf(stderr,"\n");
 
 		walk_packet=walk_packet->next;

@@ -45,7 +45,7 @@ int main(void)
 
 		return -1;
 	}
-	rslt = init_config(&config,0);
+	rslt = init_config(&config);
 	if(rslt == -1)
 	{
 		fprintf(stderr,_("search:  Non-Fatal Error: Failed to read config.\n"));
@@ -125,7 +125,16 @@ int main(void)
 
 			return -1;
 		}
-		fread(content,1,content_length,stdin);
+		rslt = fread(content,1,content_length,stdin);
+		if(rslt == 0)
+		{
+		    do_error_page(_("Error reading content."));
+		    db_disconnect(conn);
+		    if(config != NULL)
+		        free(config);
+		    
+		    return -1;
+		}
 		content[content_length] = '\0';
 	}
 	else
@@ -564,7 +573,7 @@ int  retrieve_key_info(PGconn *conn, char *fingerprint)
 			if(expiration_time != 0)
 			{
 				creation_time_str[0] = '\0';
-				snprintf(creation_time_str,26,(char *)ctime(&(creation_time)));
+				snprintf(creation_time_str,26,"%s",ctime(&(creation_time)));
 				creation_time_str[26] = '\0';
 				printf("%s        %s",creation_time_str, ctime(&(expiration_time)));
 			}

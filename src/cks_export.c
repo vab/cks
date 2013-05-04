@@ -34,12 +34,12 @@ int main(int argc,char *argv[])
 
 	int rslt = 0;
 	int rslt_2 = 0;
-	long to_export = 0;
-	long exported = 0;
+	unsigned long to_export = 0;
+	unsigned long exported = 0;
 
 	unsigned char fp[41];
-	long i = 0;
-	long j = 0;
+	unsigned long i = 0;
+	unsigned long j = 0;
 
 	/* 50000 pubkeys per file. */
 	unsigned long max_keys = 50000;
@@ -57,7 +57,7 @@ int main(int argc,char *argv[])
 
 		return -1;
 	}
-        rslt = init_config(&config,0);
+        rslt = init_config(&config);
         if(rslt == -1)
         {
                 fprintf(stderr,_("cks_export:  Non-Fatal Error: Failed to read config.\n"));
@@ -167,8 +167,8 @@ int main(int argc,char *argv[])
         }
 
 
-        printf(_("cks_export:  exporting %d keys.\n"),to_export);
-	printf(_("0 of %d keys exported.\n"),to_export);
+        printf(_("cks_export:  exporting %lu keys.\n"),to_export);
+	printf(_("0 of %lu keys exported.\n"),to_export);
 
 	for(i=0;i<to_export;i++)
 	{
@@ -203,7 +203,7 @@ int main(int argc,char *argv[])
 		exported++;
 		if((exported % 5000) == 0)
 		{
-			printf(_("%d of %d keys exported.\n"),exported,to_export);
+			printf(_("%lu of %lu keys exported.\n"),exported,to_export);
 		}
 		/* If i is divisable by max_keys (default: 50,000), open a new file */
 		if((exported % max_keys) == 0)

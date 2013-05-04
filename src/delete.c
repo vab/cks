@@ -70,8 +70,15 @@ int main(void)
 
 			return -1;
 		}
-		fread(content,1,content_length,stdin);
-		/* TODO: check fread result */
+		rslt = fread(content,1,content_length,stdin);
+		if(rslt == 0) /* could check to make sure size_t matches content_length */
+		{
+		    do_error_page(_("Failed to read content."));
+		    if(content != NULL)
+		        free(content);
+		    
+		    return -1;
+		}
 	}
 	else
 	{
@@ -82,23 +89,41 @@ int main(void)
 
 	hex_to_ascii(content);
 	/* TODO: Check for SQL injection */
-	/* TODO: Free malloc'd "content" before returns */
 	value_0 = strtok(content,"&");
 	if(value_0 == NULL)
+	{
+	    if(content != NULL)
+	        free(content);
+	        
 		return -1;
+    }
 	value_1 = strtok('\0',"\0");
 	if(value_1 == NULL)
+	{
+	    if(content != NULL)
+	        free(content);
+	        
 		return -1;
-
+    }
 	strtok(value_0,"=");
 	value = strtok('\0',"\0");
 	if(value == NULL)
+	{
+	    if(content != NULL)
+	        free(content);
+	        
 		return -1;
+    }
 
 	strtok(value_1,"=");
 	val = strtok('\0',"\0");
 	if(val == NULL)
+	{
+	    if(content != NULL)
+	        free(content);
+	        
 		return -1;
+    }
 
 	if( (strlen(value) != 32) && (strlen(value) != 40) &&
 		(strlen(value) != 48) && (strlen(value) != 50)  )
@@ -106,6 +131,8 @@ int main(void)
 		print_admin_header(_("Error:  Invalid Fingerprint"));
 		printf(_("The Fingerprint that you provided (%s) is invalid.\n"),value);
 		print_admin_footer();
+		if(content != NULL)
+			free(content);
 
 		return -1;
 	}
@@ -119,7 +146,7 @@ int main(void)
 
 		return -1;
 	}
-	rslt = init_config(&config,0);
+	rslt = init_config(&config);
 	if(rslt == -1)
 	{
 		fprintf(stderr,_("delete:  Non-Fatal Error: Failed to read config.\n"));

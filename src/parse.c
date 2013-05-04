@@ -200,7 +200,7 @@ int parse_keyring(struct openPGP_keyring **keyring,int source)
 		if((pktlen < 1) || (pktlen > D_CKS_MAX_LEN))
 		{
 			fprintf(stderr,"parse.c: fatal error:  Sanity Check of packet length failed.\n");
-			fprintf(stderr,"parse.c: 197: %d\n",pktlen);
+			fprintf(stderr,"parse.c: 197: %lu\n",pktlen);
 			free_packet(&new_packet);
 			free_pubkey(&pubkey);
 
@@ -427,7 +427,7 @@ int parse_pubkey(struct openPGP_pubkey **pubkey,int source)
 		if((pktlen < 1) || (pktlen > D_CKS_MAX_LEN))
 		{
 			fprintf(stderr,"parse.c: fatal error:  Sanity Check of packet length failed.\n");
-			fprintf(stderr,"parse.c: 420: %d\n",pktlen);
+			fprintf(stderr,"parse.c: 420: %lu\n",pktlen);
 			fprintf(stderr,"prase.c: d: %d\n",d);
 			free_packet(&new_packet);
 
@@ -768,7 +768,7 @@ int parse_packets(struct openPGP_pubkey **key_result, int source)
 			}
 			else
 			{
-				fprintf(stderr,_("Unexpected Packet Type: %0.2x.\n"),walk->packet_id);
+				fprintf(stderr,_("Unexpected Packet Type: %.2x.\n"),walk->packet_id);
 			}
 			(*key_result)->key_status = -1;
 
@@ -1583,7 +1583,7 @@ int parse_v4_sig_sub_packets(struct openPGP_packet *packet,struct key_signature 
 			{
 				fprintf(stderr,"parse.c 1522: Error.\n");
 				fprintf(stderr,"Parse Faliled, invalid lengths\n");
-				fprintf(stderr,"loop_index: %d  total_lenbytes: %d\n", loop_index,total_lenbytes);
+				fprintf(stderr,"loop_index: %lu  total_lenbytes: %lu\n", loop_index,total_lenbytes);
 				
 				return -1;
 			}
@@ -2675,14 +2675,14 @@ int process_ebuff_ecsum_pubkey(struct openPGP_pubkey *pubkey, int source)
 	pubkey->buffer_idx = decode_buffer(pubkey->radix_data, pubkey->buffer);
 	if(pubkey->buffer_idx < 1)
 	{
-		fprintf(stderr,_("Buffer decoding of Radix Data failed: decode_buffer retured %d.\n"), pubkey->buffer_idx);
+		fprintf(stderr,_("Buffer decoding of Radix Data failed: decode_buffer retured %lu.\n"), pubkey->buffer_idx);
 
 		return -1;
 	}
 	rslt = decode_buffer(pubkey->encoded_cksum,decoded_cksum);
 	if(rslt != 3)
 	{
-		fprintf(stderr,"parse: 2224: Buffer decoding of cksum failed: %d.\n", rslt);
+		fprintf(stderr,"parse: 2224: Buffer decoding of cksum failed: %lu.\n", rslt);
 		fprintf(stderr,"parse: 2225: pubkey->encoded_cksum: %s\n",pubkey->encoded_cksum);
 		dump_pubkey_stderr(pubkey);
 

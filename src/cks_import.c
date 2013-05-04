@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
 		return -1;
 	}
-	rslt = init_config(&config,0);
+	rslt = init_config(&config);
 	if(rslt == -1)
 	{
 		fprintf(stderr,_("cks_import:  Non-Fatal Error: Failed to read config.\n"));
@@ -190,12 +190,12 @@ int main(int argc, char *argv[])
 
 	/* Display The Final Results */
 	printf("Final Results:\n\n");
-	printf(_("Total Public Keys Processed: %d\n"),num_keys_processed);
-	printf(_("  Total Public Keys Imported: %d\n"),num_keys_imported);
-	printf(_("  Total Public Keys Updated: %d\n"),num_keys_merged);
-	printf(_("  Total Public Keys Duplicate: %d\n"),num_keys_duplicate);
-	printf(_("  Total Public Keys Rejected: %d\n"),num_keys_rejected);
-	printf(_("  Total Pubkey Keys Failed on Error: %d\n"),num_keys_failed_err);
+	printf(_("Total Public Keys Processed: %lu\n"),num_keys_processed);
+	printf(_("  Total Public Keys Imported: %lu\n"),num_keys_imported);
+	printf(_("  Total Public Keys Updated: %lu\n"),num_keys_merged);
+	printf(_("  Total Public Keys Duplicate: %lu\n"),num_keys_duplicate);
+	printf(_("  Total Public Keys Rejected: %lu\n"),num_keys_rejected);
+	printf(_("  Total Pubkey Keys Failed on Error: %lu\n"),num_keys_failed_err);
 	printf("\n");
 
 	/*Close up and exit */
@@ -476,12 +476,12 @@ int process_file(PGconn *conn, char *filename, int verbose)
 				}
 				if((num_keys_processed % 250) == 0)
 				{
-					printf(_("Public Keys Processed: %d\n"),num_keys_processed);
-					printf(_("  Public Keys Imported: %d\n"),num_keys_imported);
-					printf(_("  Public Keys Updated: %d\n"),num_keys_merged);
-					printf(_("  Public Keys Duplicate: %d\n"),num_keys_duplicate);
-					printf(_("  Public Keys Rejected: %d\n"),num_keys_rejected);
-					printf(_("  Pubkey Keys Failed on Error: %d\n"),num_keys_failed_err);
+					printf(_("Public Keys Processed: %lu\n"),num_keys_processed);
+					printf(_("  Public Keys Imported: %lu\n"),num_keys_imported);
+					printf(_("  Public Keys Updated: %lu\n"),num_keys_merged);
+					printf(_("  Public Keys Duplicate: %lu\n"),num_keys_duplicate);
+					printf(_("  Public Keys Rejected: %lu\n"),num_keys_rejected);
+					printf(_("  Pubkey Keys Failed on Error: %lu\n"),num_keys_failed_err);
 					printf("\n");
 				}
 				/* Free mem */
@@ -514,7 +514,7 @@ int process_file(PGconn *conn, char *filename, int verbose)
 		new_packet->packet_length = pktlen;
 		if(pktlen < 1)
 		{
-			fprintf(stderr,_("cks_import: parse error, bad packet length decoded: %d.\n"), pktlen);
+			fprintf(stderr,_("cks_import: parse error, bad packet length decoded: %lu.\n"), pktlen);
 
 			#ifdef DEBUG
 			dump_packet_info_stderr(pubkey->packet_list);
@@ -538,7 +538,7 @@ int process_file(PGconn *conn, char *filename, int verbose)
 		new_packet->packet_data = pkt_data_ptr = (char *)malloc(pktlen+1);
 		if(new_packet->packet_data == NULL)
 		{
-			fprintf(stderr,_("cks_import: Fatal Error: malloc call failed. Out of memory pkt_len: %d.\n"), pktlen);
+			fprintf(stderr,_("cks_import: Fatal Error: malloc call failed. Out of memory pkt_len: %lu.\n"), pktlen);
 			if(new_packet != NULL)
 			{
 				free_packet(&new_packet);
@@ -554,7 +554,7 @@ int process_file(PGconn *conn, char *filename, int verbose)
 		new_packet->full_packet_data = (char *)malloc(pktlen+10);
 		if(new_packet->full_packet_data == NULL)
 		{
-			fprintf(stderr,_("cks_import: Fatal Error: malloc call failed. Out of memory full_pkt_len: %d.\n"), pktlen);
+			fprintf(stderr,_("cks_import: Fatal Error: malloc call failed. Out of memory full_pkt_len: %lu.\n"), pktlen);
 			if(new_packet != NULL)
 			{
 				free_packet(&new_packet);

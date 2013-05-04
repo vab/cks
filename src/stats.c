@@ -57,20 +57,6 @@ int main(int argc,char *argv[])
 	float prct = 0.0;
 
 
-	config = (struct cks_config *)malloc(sizeof(struct cks_config));
-	if(config == NULL)
-	{
-		fprintf(stderr,_("cks_export: Fatal Error:  Malloc Call Failed: Out of memroy.\n"));
-
-		return -1;
-	}
-        rslt = init_config(&config,0);
-        if(rslt == -1)
-        {
-                fprintf(stderr,_("stats:  Non-Fatal Error: Failed to read config.\n"));
-                fprintf(stderr,_("stats:  Using default configuration information.\n"));
-        }
-
 	if(argc > 0)
 	{
 		for(arg=1;arg<argc;arg++)
@@ -116,6 +102,23 @@ int main(int argc,char *argv[])
 			}
 		}
 	}
+	
+	config = (struct cks_config *)malloc(sizeof(struct cks_config));
+	if(config == NULL)
+	{
+		fprintf(stderr,_("cks_export: Fatal Error:  Malloc Call Failed: Out of memroy.\n"));
+
+		return -1;
+	}
+    rslt = init_config(&config);
+    if(rslt == -1)
+    {
+                fprintf(stderr,_("stats:  Non-Fatal Error: Failed to read config.\n"));
+                fprintf(stderr,_("stats:  Using default configuration information.\n"));
+                
+                if(config != NULL)
+                    free(config);
+    }
 
         printf(_("<html><head><title>CryptNET OpenPGP Public Key Server</title></head>\n"));
         printf("<body bgcolor=\"#ffffff\">\n");
@@ -141,17 +144,19 @@ int main(int argc,char *argv[])
                 printf(_("Connection to database failed.\n"));
                 fprintf(stderr, "DB Error Message: %s", PQerrorMessage(conn));
                 db_disconnect(conn);
-
+                if(config != NULL)
+                    free(config);
+                    
                 return -1;
         }
 
         snprintf(stmt,100,"select count(fp) from cks_fp_key_table");
 	num = count(conn, stmt);
-        printf(_("<p>There are currently %d public keys in the database.</p>\n"),num);
+        printf(_("<p>There are currently %lu public keys in the database.</p>\n"),num);
 
         snprintf(stmt,100,"select count(fkey_id) from cks_uid_table");
 	total_num = count(conn, stmt);
-        printf(_("<p>There are currently %d user ids in the database.</p>\n"), total_num);
+        printf(_("<p>There are currently %lu user ids in the database.</p>\n"), total_num);
 
 	snprintf(stmt,100,"select count(fp) from cks_key_info_table where pgp_vrsn=3");
 	vrsn_3 = count(conn,stmt);
@@ -161,9 +166,9 @@ int main(int argc,char *argv[])
 	printf(_("<h3>PGP Version</h3>\n"));
 	printf("<table cols=\"3\" width=\"50%%\">\n");
 	prct = (float)vrsn_3/(float)num;
-	printf(_("<tr><td>Version 3</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td></tr>\n"),vrsn_3,(prct * 100));
+	printf(_("<tr><td>Version 3</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td></tr>\n"),vrsn_3,(prct * 100));
 	prct = (float)vrsn_4/(float)num;
-	printf(_("<tr><td>Version 4</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td></tr>\n"),vrsn_4,(prct * 100));
+	printf(_("<tr><td>Version 4</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td></tr>\n"),vrsn_4,(prct * 100));
 	printf("</table>\n");
 	fflush(0);
 
@@ -172,7 +177,7 @@ int main(int argc,char *argv[])
 	snprintf(stmt,100,"select count(fp) from cks_key_info_table where revoked=1");
 	revoked = count(conn,stmt);
 	prct = (float)revoked/(float)num;
-	printf(_("<tr><td>Revoked Keys</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td></tr>\n"),revoked,(prct * 100));
+	printf(_("<tr><td>Revoked Keys</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td></tr>\n"),revoked,(prct * 100));
 	printf("</table>\n");
 	fflush(0);
 
@@ -190,15 +195,15 @@ int main(int argc,char *argv[])
 	printf(_("<h3>Key Size Statistics</h3>\n"));
 	printf("<table cols=\"3\" width=\"50%%\">\n");
 	prct = (float)key_512/(float)num;
-	printf("<tr><td align=\"right\">512 Bits</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td></tr>\n",key_512,(prct * 100));
+	printf("<tr><td align=\"right\">512 Bits</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td></tr>\n",key_512,(prct * 100));
 	prct = (float)key_768/(float)num;
-	printf("<tr><td align=\"right\">768 Bits</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td></tr>\n",key_768,(prct * 100));
+	printf("<tr><td align=\"right\">768 Bits</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td></tr>\n",key_768,(prct * 100));
 	prct = (float)key_1024/(float)num;
-	printf("<tr><td align=\"right\">1024 Bits</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td></tr>\n",key_1024,(prct * 100));
+	printf("<tr><td align=\"right\">1024 Bits</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td></tr>\n",key_1024,(prct * 100));
 	prct = (float)key_2048/(float)num;
-	printf("<tr><td align=\"right\">2048 Bits</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td></tr>\n",key_2048,(prct * 100));
+	printf("<tr><td align=\"right\">2048 Bits</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td></tr>\n",key_2048,(prct * 100));
 	prct = (float)key_4096/(float)num;
-	printf("<tr><td align=\"right\">4096 Bits</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td></tr>\n",key_4096,(prct * 100));
+	printf("<tr><td align=\"right\">4096 Bits</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td></tr>\n",key_4096,(prct * 100));
 	printf("</table>\n");
 	fflush(0);
 
@@ -208,32 +213,32 @@ int main(int argc,char *argv[])
 	snprintf(stmt,100,"select count(fp) from cks_key_info_table where algorithm=1 or algorithm=2 or algorithm=3");
 	rsa = count(conn,stmt);
 	prct = (float)rsa/(float)num;
-	printf("<tr><td>RSA</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td>\n",rsa,(prct * 100));
+	printf("<tr><td>RSA</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td>\n",rsa,(prct * 100));
 
 	snprintf(stmt,100,"select count(fp) from cks_key_info_table where algorithm=17");
 	dsa = count(conn,stmt);
 	prct = (float)dsa/(float)num;
-	printf("<tr><td>DSA</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td>\n",dsa,(prct * 100));
+	printf("<tr><td>DSA</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td>\n",dsa,(prct * 100));
 
 	snprintf(stmt,100,"select count(fp) from cks_key_info_table where algorithm=16 or algorithm=20");
 	elg = count(conn,stmt);
 	prct = (float)elg/(float)num;
-	printf("<tr><td>El Gamal</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td>\n",elg,(prct * 100));
+	printf("<tr><td>El Gamal</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td>\n",elg,(prct * 100));
 
 	snprintf(stmt,100,"select count(fp) from cks_key_info_table where algorithm=18");
 	ec = count(conn,stmt);
 	prct = (float)ec/(float)num;
-	printf("<tr><td>Elliptic Curve</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td>\n",ec,(prct * 100));
+	printf("<tr><td>Elliptic Curve</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td>\n",ec,(prct * 100));
 
 	snprintf(stmt,100,"select count(fp) from cks_key_info_table where algorithm=19");
 	ecdsa = count(conn,stmt);
 	prct = (float)ecdsa/(float)num;
-	printf("<tr><td>Elliptic Curve DSA</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td>\n",ecdsa,(prct * 100));
+	printf("<tr><td>Elliptic Curve DSA</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td>\n",ecdsa,(prct * 100));
 
 	snprintf(stmt,100,"select count(fp) from cks_key_info_table where algorithm=21");
 	dh = count(conn,stmt);
 	prct = (float)dh/(float)num;
-	printf("<tr><td>Diffie-Hellman x9.42</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td>\n",dh,(prct * 100));
+	printf("<tr><td>Diffie-Hellman x9.42</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td>\n",dh,(prct * 100));
 	printf("</table>\n");
 	fflush(0);
 
@@ -515,6 +520,8 @@ int main(int argc,char *argv[])
 		
 		return -1;
 	}
+	if(config != NULL)
+	    free(config);
 
         return 0;
 }
@@ -529,7 +536,7 @@ int count_uids(PGconn *conn,char *country,char *tld,long total)
 	snprintf(stmt,100,"select count(uid) from cks_uid_table where uid like '%%.%s>'",tld);
 	num = count(conn, stmt);
 	per = (float)num/(float)total;
-	printf("<tr><td>%s</td><td>.%s</td><td align=\"right\">%d</td><td align=\"right\">%.4f%%</td></tr>\n",country,tld,num,(per * 100));
+	printf("<tr><td>%s</td><td>.%s</td><td align=\"right\">%lu</td><td align=\"right\">%.4f%%</td></tr>\n",country,tld,num,(per * 100));
 	fflush(0);
 	
 	return 0;

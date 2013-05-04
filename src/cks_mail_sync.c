@@ -72,7 +72,7 @@ int main(int argc,char *argv[])
 
 		return -1;
 	}
-        rslt = init_config(&config,0);
+        rslt = init_config(&config);
         if(rslt == -1)
         {
                 fprintf(stderr,_("cks_mail_sync:  Non-Fatal Error: Failed to read config.\n"));

@@ -21,7 +21,7 @@
 #include "retrieve.h"
 
 
-struct openPGP_pubkey * retrieve_pubkey(PGconn *conn,unsigned char *fingerprint,int source)
+struct openPGP_pubkey * retrieve_pubkey(PGconn *conn,char *fingerprint,int source)
 {
 	PGresult        *result = NULL;
 	char            stmt[112];
@@ -218,7 +218,7 @@ struct openPGP_pubkey * retrieve_pubkey(PGconn *conn,unsigned char *fingerprint,
 /*  Check and see if the key_exists in the keyserver database.
     Return 1 if it does, 0 if it does not and -1 on error.
 */
-int key_exists(PGconn *conn,unsigned char *fp)
+int key_exists(PGconn *conn,char *fp)
 {
 	int key_exists = -1;
 
@@ -266,7 +266,7 @@ int key_exists(PGconn *conn,unsigned char *fp)
 	return key_exists;
 }
 
-int key_rejected(PGconn *conn,unsigned char *fp)
+int key_rejected(PGconn *conn,char *fp)
 {
 	int key_rejected = 0;
 
@@ -311,7 +311,7 @@ int key_rejected(PGconn *conn,unsigned char *fp)
 	return key_rejected;
 }
 
-int retrieve_off_network_by_id(unsigned char *keyid)
+int retrieve_off_network_by_id(char *keyid)
 {
 	/* The idea here is that we'll do a socket based pks search
 	   against the other major networks: PKS,SKS,Keyserver.net,
@@ -323,7 +323,7 @@ int retrieve_off_network_by_id(unsigned char *keyid)
 	return 0;
 }
 
-int retrieve_off_network_by_fp(unsigned char *fp)
+int retrieve_off_network_by_fp(char *fp)
 {
 	/* The idea here is that we'll do a socket based pks search
 	   against the other major networks: PKS,SKS,Keyserver.net,

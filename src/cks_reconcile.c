@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 		return -1;
 	}
-        rslt = init_config(&config,0);
+        rslt = init_config(&config);
         if(rslt == -1)
         {
                 fprintf(stderr,_("cks_export:  Non-Fatal Error: Failed to read config.\n"));
@@ -206,7 +206,7 @@ int perform_reconciliation(struct d_linked_list *list_local, struct d_linked_lis
 		}
 		if(found == 0)
 		{
-			printf("Requesting:  %s\n", walk_local->name);
+			printf("Requesting:  %s\n", (char *)walk_local->name);
 			/*rslt = fetch_from(walk_local->name,foreign_address);
 			if(rslt == -1)
 			{

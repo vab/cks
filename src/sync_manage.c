@@ -52,7 +52,7 @@ int main(void)
 
 		return -1;
 	}
-	rslt = init_config(&config,0);
+	rslt = init_config(&config);
         if(rslt == -1)
         {
                 fprintf(stderr,_("sync_manage:  Non-Fatal Error: Failed to read config.\n"));
@@ -115,7 +115,16 @@ int main(void)
 
 			return -1;
                 }
-                fread(content,1,content_length,stdin);
+        rslt = fread(content,1,content_length,stdin);
+        if(rslt == 0)
+        {
+            do_error_page(_("Server was unable to read content."));
+            if(config != NULL)
+                free(config);
+        
+            return -1;
+        }
+        
 		content[content_length] = '\0';
 
 		hex_to_ascii(content);

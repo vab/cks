@@ -208,7 +208,7 @@ int echo_key_main_key_info(struct openPGP_pubkey *key_result)
 
 	if(key_result->expiration_time != 0)
 	{
-		snprintf(creation_time,25,ctime(&(key_result->creation_time)));
+		snprintf(creation_time,25,"%s",ctime(&(key_result->creation_time)));
 		creation_time[25] = '\0';
 		printf("%s        %s",creation_time, ctime(&(key_result->expiration_time)));
 	}
@@ -260,7 +260,7 @@ int echo_subkey_info(struct openPGP_pubkey *the_key,struct openPGP_subkey *subke
 
 		if(walk_subkey->expiration_time != 0)
 		{
-			snprintf(creation_time,25,ctime(&(walk_subkey->creation_time)));
+			snprintf(creation_time,25,"%s",ctime(&(walk_subkey->creation_time)));
 			creation_time[25] = '\0';
 			printf("%s        %s",creation_time,ctime(&(walk_subkey->expiration_time)));
 			printf("</li>");

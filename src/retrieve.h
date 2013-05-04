@@ -28,9 +28,9 @@
 #include "db.h"
 
 
-struct openPGP_pubkey * retrieve_pubkey(PGconn *,unsigned char *,int);
-int key_exists(PGconn *,unsigned char *);
-int key_rejected(PGconn *,unsigned char *);
+struct openPGP_pubkey * retrieve_pubkey(PGconn *,char *,int);
+int key_exists(PGconn *,char *);
+int key_rejected(PGconn *,char *);
 
-int retrieve_off_network_by_id(unsigned char *);
-int retrieve_off_network_by_fp(unsigned char *);
+int retrieve_off_network_by_id(char *);
+int retrieve_off_network_by_fp(char *);
