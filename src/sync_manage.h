@@ -28,4 +28,4 @@
 #include "db.h"
 
 
-int insert_into_other_server(PGconn *,char *,char *,char *,char *);
+int insert_into_other_server(PGconn *,char *,char *,char *);

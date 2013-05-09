@@ -60,7 +60,6 @@ int	print_sig_data(char *);
 int	print_uid(PGconn *,unsigned char *, unsigned char *);
 int	print_fp(unsigned char *);
 
-int	mail_pubkey(struct openPGP_pubkey *,struct cks_config *,struct servers_to_sync *,struct servers_to_sync *);
 int	remove_key_from_sync_list(PGconn *, unsigned char *,FILE *);
 
 int	strtoupper(char *);

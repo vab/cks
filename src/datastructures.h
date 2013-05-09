@@ -166,7 +166,6 @@ struct cks_config
 	unsigned char vrsn[101];
 	unsigned char cmnt[201];
 	unsigned char adm_email[101];
-	unsigned char sync_email[101];
 	/* Accept Version 2 Keys */
 	int acpt_v2;
 	/* Accept Version 3 Keys */
@@ -182,7 +181,6 @@ struct cks_config
 	/* Attempt Off Network Fetch */
 	int aonf;
 	unsigned char err_log[201];
-	unsigned char mail_err_log[201];
 	unsigned char data_log[201];
 };
 

@@ -37,7 +37,6 @@ int main(void)
 	struct name_value_pair_dllst *form = NULL;
 	/* cgi vars */
 	char *hostname	= NULL;
-	char *email	= NULL;
 	char *srvr_type = NULL;
 	char *priority	= NULL;
 
@@ -156,11 +155,10 @@ int main(void)
 		}
 
 		hostname = get_value(form,"hostname");
-		email = get_value(form,"email");
 		srvr_type = get_value(form,"srvr_type");
 		priority = get_value(form,"priority");
 
-		rslt = insert_into_other_server(conn,hostname,email,srvr_type,priority);
+		rslt = insert_into_other_server(conn,hostname,srvr_type,priority);
 		if(rslt == -1)
 		{
 			do_error_page("Failed To Insert new record into database.");
@@ -268,7 +266,6 @@ int main(void)
 	printf("<form method=\"POST\" action=\"sync_manage.cgi\">\n");
 	printf(_("<h3>Add New Synchronization Host</h3>\n"));
 	printf(_("<p>Add Host: <input name=\"hostname\" type=\"text\" length=\"60\" maxlen=\"60\"></p>\n"));
-	printf(_("<p>Email: <input name=\"email\" type=\"text\" length=\"60\" maxlen=\"100\"></p>\n"));
 	printf(_("<p>Priority:\n"));
 	printf("<select name=\"priority\">\n");
 	printf("<option value=\"1\">1</option>\n");
@@ -316,7 +313,7 @@ int main(void)
         return 0;
 }
 
-int insert_into_other_server(PGconn *conn,char *hostname,char *email,char *srvr_type,char *priority)
+int insert_into_other_server(PGconn *conn,char *hostname,char *srvr_type,char *priority)
 {
 	char stmt[401];
 	unsigned int	srvr_type_i = 0;
@@ -327,10 +324,11 @@ int insert_into_other_server(PGconn *conn,char *hostname,char *email,char *srvr_
 	srvr_type_i = atoi(srvr_type);
 	priority_i = atoi(priority);
 	
-	snprintf(stmt,400,"insert into cks_other_servers values('%s','%s','%d','%d')",hostname,email,srvr_type_i,priority_i);
+	snprintf(stmt,400,"insert into cks_other_servers values('%s','%d','%d')",hostname,srvr_type_i,priority_i);
 	
 	rslt = db_stmt(conn,stmt,NULL);
 	
 	
 	return rslt;
 }
+

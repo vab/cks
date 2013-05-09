@@ -180,7 +180,6 @@ int init_openPGP_subpacket(struct openPGP_subpacket *the_subpacket)
 int init_srvr_to_sync(struct servers_to_sync *new_srvr)
 {
 	memset(new_srvr->srvr,0x00,301);
-	memset(new_srvr->email,0x00,301);
 
 	new_srvr->prev = NULL;
 	new_srvr->next = NULL;

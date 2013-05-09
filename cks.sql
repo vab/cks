@@ -101,16 +101,15 @@ create index cks_pending_sync_idx on cks_pending_sync(fp);
 
 
 -- server_type  cks      (http sync)   1
--- server_type  horowits (mail sync)   2
+-- server_type  horowits (http sync)   2
 -- server_type  cks-bin  (binary sync) 3
 
 create table cks_other_servers
 (
-        server          varchar(300) NOT NULL,
-	email           varchar(300) NOT NULL,
-	server_type     int2 NOT NULL,
-        sync_priority   int2 NOT NULL,
-        PRIMARY KEY(server)
+    server          varchar(300) NOT NULL,
+    server_type     int2 NOT NULL,
+    sync_priority   int2 NOT NULL,
+    PRIMARY KEY(server)
 );
 
 

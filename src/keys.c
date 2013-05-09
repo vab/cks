@@ -484,14 +484,7 @@ int add_key_from_keyring(PGconn *conn,struct openPGP_pubkey *walk_pubkey, int so
 			result = add_key_to_db(conn,walk_pubkey,source);
 			if(result == -1)
 			{
-				if(source == D_SOURCE_ADD_CGI)
-				{
-					do_error_page(_("Failed To add key to db\n"));
-				}
-				else if(source == D_SOURCE_MAIL_SYNC)
-				{
-					fprintf(stderr,_("Failed to add key to db.\n"));
-				}
+				do_error_page(_("Failed To add key to db\n"));
 			}
 			else
 			{
@@ -825,7 +818,7 @@ int insert_key_into_db(PGconn *conn,struct openPGP_pubkey *key_result,int source
 		uid_walk = uid_walk->next;
 	}
 
-	if(source != D_SOURCE_MAIL_SYNC)
+	if(source != D_SOURCE_CKS_SYNC_UTIL)
 	{
 		/* This is temporary until I finish the sync code.  This keeps keys that come in from
 		   pgp.net from being put in the sync table, so that I know I shouldn't send them back
@@ -1217,18 +1210,6 @@ int print_fp(unsigned char *fp)
 
 	return 0;
 }
-
-
-int mail_pubkey(struct openPGP_pubkey *pubkey,struct cks_config *config, struct servers_to_sync *sunk_servers,
-			struct servers_to_sync *servers)
-{
-	/* The idea here was that we could immediatly send out a sync mail when a new key came in
-	   rather than running a cron job.  I'm not sure what I'm going to do here.  I could go
-	   either way. */
-
-	return 0;
-}
-
 
 int echo_radix_key(struct openPGP_pubkey *key_result,struct cks_config *config)
 {

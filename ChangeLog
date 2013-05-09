@@ -2,6 +2,7 @@ Version 0.2.5
 -------------
 Remove LDAP support
 Remove memory cache support
+Remove legacy e-mail synch code
 
 Version 0.2.4
 -------------

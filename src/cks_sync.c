@@ -38,25 +38,22 @@ int main(int argc, char *argv[])
 	FILE		*data_log = NULL;
         FILE            *err_log = NULL;
 
-	FILE		*sendmail = NULL;
-
         PGconn          *conn = NULL;
         PGresult        *result_1 = NULL;
 	PGresult	*result_2 = NULL;
 
         struct openPGP_pubkey      *pubkey = NULL;
 
-        const char pks_servers_query[] = "select server, email from cks_other_servers order by sync_priority";
+        const char pks_servers_query[] = "select server from cks_other_servers order by sync_priority";
         const char keys_query[] = "select fp from cks_pending_sync";
 
-	char	*to_list = NULL;
-	unsigned long	to_max_len = 0;
 	unsigned int	num_srvrs = 0;
 
 	unsigned int arg = 0;
 	unsigned int verbose = 0;
 
 	int	rslt = 0;
+	FILE  *socket = NULL;
 
 
         config = (struct cks_config *)malloc(sizeof(struct cks_config));
@@ -93,7 +90,7 @@ int main(int argc, char *argv[])
 					}
 					else if(strstr(argv[arg],"version") != NULL)
 					{
-						printf("CKS Version 0.2.2\n");
+						printf("CKS Version 0.2.5\n");
 
 						return 0;
 					}
@@ -104,7 +101,7 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					printf("Usage: cksd\n");
+					printf("Usage: cks_sync\n");
 					printf("	-v Verbose Mode\n");
 					printf("	-h This Help Text\n");
 					printf("	--help This Help Text\n");
@@ -185,30 +182,13 @@ int main(int argc, char *argv[])
 	else
 	{
 		num_srvrs = PQntuples(result_1);
-		/* The value 310 comes from the size of the email field in the cks_other_servers table */
-		/* Make sure the two stay the same size (x,x+10) or else you could create a security problem */
-		to_max_len = num_srvrs * 310;
-		to_list = (char *)malloc(to_max_len);
-		if(to_list == NULL)
-		{
-			fprintf(stderr,"Malloc call failed:  out of memory\n");
-			if(config != NULL)
-				free(config);
-
-			return -1;
-		}
-		to_max_len--;
+		
 		for(i = 0; i < num_srvrs; i++)
 		{
 			#ifdef DEBUG
 			printf("cks_sync: adding server: %s\n",PQgetvalue(result_1,i,0));
 			#endif
-			strncat(to_list,PQgetvalue(result_1,i,1),to_max_len);
-			if(i != (num_srvrs - 1))
-			{
-				strncat(to_list,", ",to_max_len);
-			}
-			/* % 3 and a \n maybe? */
+            /* Add server to a linked list */
 		}
 	}
         PQclear(result_1);
@@ -232,8 +212,6 @@ int main(int argc, char *argv[])
 		db_disconnect(conn);
 		if(config != NULL)
 			free(config);
-		if(to_list != NULL)
-			free(to_list);
 		
 		return -1;
 	}
@@ -249,8 +227,6 @@ int main(int argc, char *argv[])
 		db_exit_nicely(conn);
 		if(config != NULL)
 			free(config);
-		if(to_list != NULL)
-			free(to_list);
 
 		return -1;
 	}
@@ -264,8 +240,6 @@ int main(int argc, char *argv[])
 				fprintf(stderr,_("cks_mail_util: malloc call failed: out of memory!\n"));
 				if(config != NULL)
 					free(config);
-				if(to_list != NULL)
-					free(to_list);
 
 				return -1;
 			}
@@ -287,9 +261,6 @@ int main(int argc, char *argv[])
 	PQclear(result_2);
 	/* end of building key list */
 
-	/*
-	 * We're done syncing, clean up and exit.
-	 */
         keys = first_key;
 	while(keys != NULL)
 	{
@@ -298,7 +269,7 @@ int main(int argc, char *argv[])
 		int j = 1;
 		
 		/*  retrieve the pubkey from the db */
-		pubkey = (struct openPGP_pubkey *)retrieve_pubkey(conn,keys->fp,D_SOURCE_CKS_MAIL_UTIL);
+		pubkey = (struct openPGP_pubkey *)retrieve_pubkey(conn,keys->fp,D_SOURCE_CKS_SYNC_UTIL);
 		if(pubkey == NULL)
 		{
 			fprintf(stderr,_("Failed to retrieve key: %s\n"),keys->fp);
@@ -306,39 +277,19 @@ int main(int argc, char *argv[])
 			fclose(data_log);
 			if(config != NULL)
 				free(config);
-			if(to_list != NULL)
-				free(to_list);
 
 			return -1;
 		}
 
 
-		/* open up a pipe to sendmail */
-		sendmail = popen("/usr/sbin/sendmail -t", "w");
-		if(sendmail == NULL)
-		{
-			fprintf(stderr,_("Couldn't Open Sendmail\n"));
-			fclose(data_log);
-			if(config != NULL)
-				free(config);
-			if(to_list != NULL)
-				free(to_list);
+		/* open up a socket */
+		
 
-			return -1;
-		}
+		/* Send the key over http */
 
-		/* Send the actual email */
-		fprintf(sendmail,"From: %s\n",config->sync_email);
-
-		fprintf(sendmail,"To: %s\n",to_list);
-		fprintf(sendmail,"X-KeyServer-Sent: %s\n",config->sync_email);
-		fprintf(sendmail,"Subject: incremental\n");
-		fprintf(sendmail,"MIME-Version: 1.0\n");
-		fprintf(sendmail,"Content-type: application/pgp-keys\n");
-		fprintf(sendmail,"\n");
-		fprintf(sendmail,"-----BEGIN PGP PUBLIC KEY BLOCK-----\n");
-		fprintf(sendmail,"%s",config->vrsn);
-		fprintf(sendmail,"%s",config->cmnt);
+		fprintf(socket,"-----BEGIN PGP PUBLIC KEY BLOCK-----\n");
+		fprintf(socket,"%s",config->vrsn);
+		fprintf(socket,"%s",config->cmnt);
 
 		len = strlen(pubkey->radix_data);
 		if(len == 0)
@@ -350,18 +301,18 @@ int main(int argc, char *argv[])
 			j = 1;
 			for(i=0;i<len;i++)
 			{
-				fprintf(sendmail,"%c",pubkey->radix_data[i]);
-				if(j == 64) fprintf(sendmail,"\n");
-				else if((j % 64) == 0) fprintf(sendmail,"\n");
+				fprintf(socket,"%c",pubkey->radix_data[i]);
+				if(j == 64) fprintf(socket,"\n");
+				else if((j % 64) == 0) fprintf(socket,"\n");
 				j++;
 			}
-			if((j % 64) != 1) fprintf(sendmail,"\n");
+			if((j % 64) != 1) fprintf(socket,"\n");
 		}
-		fprintf(sendmail,"=%s\n",pubkey->encoded_cksum);
-		fprintf(sendmail,"-----END PGP PUBLIC KEY BLOCK-----\n");
-		fprintf(sendmail,"\n\n");
+		fprintf(socket,"=%s\n",pubkey->encoded_cksum);
+		fprintf(socket,"-----END PGP PUBLIC KEY BLOCK-----\n");
+		fprintf(socket,"\n\n");
 
-		pclose(sendmail);
+		/* close socket */
 
 		/* Next server */
 		remove_key_from_sync_list(conn,keys->fp,err_log);
@@ -375,11 +326,6 @@ int main(int argc, char *argv[])
 	fclose(data_log);
 
 	/* Free Memory */
-	if(to_list != NULL)
-	{
-		free(to_list);
-	}
-
         keys = first_key;
         while(keys != NULL)
         {

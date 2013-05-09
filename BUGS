@@ -1,8 +1,3 @@
-Submitting Bugs
----------------
-Please submit bugs to the bug tracking system on the 
-source forge project page:  https://sourceforge.net/projects/cks/
-
 Known Bugs
 ----------
 Key merging does not update primary key info

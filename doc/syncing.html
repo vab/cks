@@ -12,15 +12,11 @@ keyserver simply uses sockets as it's preferred mechanism of
 synchronization. Basically, the keyserver packets includes a program
 which mimics a client submitting a key.
 
-<P>In future versions of CKS, an optimal solution will be persued.
-Most likely, a binary synchronization protocol will be developed
-to allow rapid synchronization with other hosts.
-
 <H3>Current Synchronization Mechanisms</H3>
 
 In this version of CKS, there are three programs that are responsible
 for synchronization.  They are <B><i>cks_sync</i></B>, 
-<B><i>cks_mail_sync</i></B>, <B><I>cks_sync_manage</B></I>, and <B><i>cksd</i></B>.  These programs
+<B><I>cks_sync_manage</B></I>, and <B><i>cksd</i></B>.  These programs
 work together to synchronize a CryptNET keyserver node with the CryptNET
 keyserver network and to allow synchronization with pks based keyserver
 networks.
@@ -58,34 +54,6 @@ field.
 <P><B>cks_sync_manage</B>
 <P>cks_sync_manage is a self explanatory program used to manage the
 records in the <I>cks_other_servers</I> table.
-
-<BR>
-<P><B>cks_mail_sync</B>
-<P>cks_mail_sync is a special program which was written to allow the
-CryptNET Keyserver Network to be synchronized as a client on a pks
-based keyserver network.  pks based networks use email to synchronize.
-The pks package contains pop3 client code which pops keys off a mail
-box after a set period of time has elapsed and add them to its keyring.
-This design requires that a pop3 daemon is run and that a pop3 account
-password is stored in the pks config files.  In the interest of security,
-cks_mail_sync was designed in a different manner.
-
-<P>cks_mail_sync is meant to be called by your MTA through the addition
-of an entry in a .forward file.  After authorization is added for the
-mail account (usually called pgp-keys) in the postgres database,
-cks_mail_sync can be called by the MTA when an email arrives from a pks
-server.  cks_mail_sync is designed to parse and process the key.  If
-the key is not currently in the database, cks_mail_sync will add it.
-cks_mail_sync will also handle key material mergers as required.
-
-<P>The current plan for the CryptNET Keyserver Network is to run
-cks_mail_sync only on the primary node - gnv.us.ks.cryptnet.net -
-and then to have gnv.us.ks.cryptnet.net synchronized keys from
-pks based servers to other CryptNET Keyserver Network nodes with
-the CKS cks_sync hkp based synchronization.  cks_mail_sync is
-provided in the distribution for instructional purposes and in the
-event that anyone wishes to set up a CKS based keyserver independent
-of the CryptNET network.
 
 <BR>
 <P><B>cksd</B>

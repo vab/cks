@@ -1,6 +1,5 @@
 Version 0.2.4
 -------------
-cks_install.pl script completion
 Fix segfault on packet parse
 Clear up key merger code
 Isolate postgres DB calls into db.c file
@@ -22,22 +21,16 @@ Abstract DB Calls
 Keyrings (Multiple Key Submit/Retrieve)
 gettext Support
 key_img
-User Manual
 Administrator Manual
-Developer Manual
 Support 2440bis-10: 4.2.2.4. Partial Body Lengths
 
 
 Version 2.0
 -----------
-DB Connection Pool
 Key Server Preferences
 Key Removal
-Key Caching
-SD Interface
 Way to sync rejected with other hosts
 Search for "only version x keys" options
 Signature Validation
 Reject packets rathern than keys outright
-
 

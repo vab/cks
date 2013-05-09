@@ -22,9 +22,8 @@
 #define D_SOURCE_CKSD           0
 #define D_SOURCE_ADD_CGI        1
 #define D_SOURCE_SEARCH_CGI     2
-#define D_SOURCE_MAIL_SYNC      3
-#define D_SOURCE_CKS_IMPORT     4
-#define D_SOURCE_CKS_MAIL_UTIL  5
+#define D_SOURCE_CKS_IMPORT     3
+#define D_SOURCE_CKS_SYNC_UTIL  4
  
 /* db_add_key_results */
 #define D_KEY_ADDED             0

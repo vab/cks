@@ -32,7 +32,6 @@ int init_config(struct cks_config **config)
         strncpy((*config)->dbsrvr_ip,"127.0.0.1",16);
         strncpy((*config)->dbsrvr_port,"5432",5);
         strncpy((*config)->dbsrvr_db,"pgp_keys",13); /* openpgp_keys */
-	strncpy((*config)->sync_email,"pgp-keys@localhost",19);
         (*config)->use_cmnt = 1;
         strncpy((*config)->vrsn,"Version:  CryptNET Keyserver Version 0.1.5\n",100);
         strncpy((*config)->cmnt,"Comment:  <a href=\"http://www.clearwaterproject.org/\">http://www.clearwaterproject.org/</a>\n\n",200);
@@ -45,7 +44,6 @@ int init_config(struct cks_config **config)
 	(*config)->biglumber = 1;
 	(*config)->aonf = 1;
         strncpy((*config)->err_log,"cks_error.log",200);
-        strncpy((*config)->mail_err_log,"/home/pgp-keys/cks_mail_sync.log",200);
         strncpy((*config)->data_log,"cks_data.log",200);
 
 	/* If you copy your config into the source code it will speed things up */
@@ -126,10 +124,6 @@ int read_config(struct cks_config **config)
                         {
         			strncpy((*config)->adm_email,value,100);
    			}
-			else if(memcmp(name,"sync_email",10) == 0)
-			{
-				strncpy((*config)->sync_email,value,100);
-			}
                         else if(memcmp(name,"acpt_v2",7) == 0)
                         {
         			(*config)->acpt_v2 = atoi(value);
@@ -161,10 +155,6 @@ int read_config(struct cks_config **config)
 			else if(memcmp(name,"err_log",7) == 0)
                         {
         			strncpy((*config)->err_log,value,200);
-        		}
-                        else if(memcmp(name,"mail_err_log",12) == 0)
-                        {
-        			strncpy((*config)->mail_err_log,value,200);
         		}
                         else if(memcmp(name,"data_log",8) == 0)
                         {

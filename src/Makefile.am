@@ -1,4 +1,4 @@
-bin_PROGRAMS = cksd cks_sync cks_mail_sync cks_import cks_export add search sync_manage stats delete cks_keyimg cks_reconcile
+bin_PROGRAMS = cksd cks_sync cks_import cks_export add search sync_manage stats delete cks_keyimg cks_reconcile
 
 INCLUDES = $(PKG_CPPFLAGS)
 
@@ -7,9 +7,6 @@ cksd_LDADD = -lpq
 
 cks_sync_SOURCES = cks_sync.c cks_sync.h db.c db.h cks_config.c cks_config.h parse.c parse.h radix.c radix.h cgi.c cgi.h md5.c md5.h sha.c sha.h keys.c keys.h datastructures.c datastructures.h retrieve.c retrieve.h std_types.c std_types.h cks_socket.c cks_socket.h bithelp.h types.h merge_keys.c cks_debug.c cks_debug.h cks_constants.h common.h
 cks_sync_LDADD = -lpq
-
-cks_mail_sync_SOURCES = cks_mail_sync.c cks_mail_sync.h cks_config.c cks_config.h datastructures.c datastructures.h cgi.c cgi.h parse.c parse.h radix.c radix.h md5.c md5.h sha.c sha.h std_types.c std_types.h keys.c keys.h db.c db.h retrieve.c retrieve.h merge_keys.c merge_keys.h bithelp.h types.h cks_debug.c cks_debug.h cks_constants.h common.h
-cks_mail_sync_LDADD = -lpq
 
 cks_import_SOURCES = cks_import.c cks_import.h cks_config.c cks_config.h datastructures.c datastructures.h cgi.c cgi.h merge_keys.c merge_keys.h radix.c radix.h parse.c parse.h std_types.c std_types.h sha.c sha.h md5.c md5.h retrieve.c retrieve.h db.c db.h types.h bithelp.h keys.c keys.h cks_debug.c cks_debug.h cks_constants.h common.h
 cks_import_LDADD = -lpq

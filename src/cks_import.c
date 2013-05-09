@@ -439,7 +439,7 @@ int process_file(PGconn *conn, char *filename, int verbose)
 						printf("%s\n",pubkey->fp_t);
 						fflush(0);
 					}
-					rslt = db_add_pubkey(conn,pubkey,D_SOURCE_MAIL_SYNC);
+					rslt = db_add_pubkey(conn,pubkey,D_SOURCE_CKS_SYNC_UTIL);
 					if(rslt == -1)
 					{
 						fprintf(stderr,"cks_import: DB Error.  db_add_pubkey_failed.\n");
