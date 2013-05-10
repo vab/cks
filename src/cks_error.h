@@ -1,5 +1,5 @@
-/* cks_log.c - Error logging functions
- * Copyright (C) 2001-2004 CryptNET, V. Alex Brennen (VAB)
+/* cks_error.h - CKS error functions header file
+ * Copyright (C) 2001-2013 CryptNET, V. Alex Brennen (VAB)
  *
  * This file is part of the CryptNET OpenPGP Public Key Server (cks).
  *
@@ -17,25 +17,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
-#include "cks_log.h"
 
+#include <stdio.h>
+#include <string.h>
 
-int log_err(char *data,int error,struct cks_config *config)
-{
-	FILE		*err_log = NULL;
+#include "common.h"
+#include "datastructures.h"
 
-	if((err_log = fopen(config->err_log, "a")) == NULL)
-	{
-		fprintf(stderr,_("cks:  Fatal Error:  Failed to open error log\n"));
-		fprintf(stderr,_("cks:  File open failed on: %s\n"),config->err_log);
-
-		return -1;
-	}
-
-	fprintf(err_log,"%s\n",data);
-
-	fclose(err_log);
-
-	return 0;
-}
+void do_error(char *);
 

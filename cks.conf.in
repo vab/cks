@@ -92,13 +92,9 @@ aonf 1
 
 # Error log location for cksd and cks cgi scripts
 # MAXLEN [201]
-err_log cks_error.log
-
-# Error log file location for cks_mail_sync program
-# MAXLEN [201]
-mail_err_log cks_mail_error.log
+err_log /var/log/cks/cks_error.log
 
 # Log file location for general log entries
 # MAXLEN [201]
-data_log cks_data.log
+data_log /var/log/cks/cks_data.log
 

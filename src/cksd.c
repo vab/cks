@@ -62,22 +62,6 @@ int     main(int argc,char *argv[])
 	unsigned int arg = 0;
 	unsigned int verbose = 0;
 
-
-	if(NULL == (config = (struct cks_config *)malloc(sizeof(struct cks_config))))
-	{
-		fprintf(stderr,_("cksd:  Fatal Error"));
-		fprintf(stderr,_("cksd:  Out of Memory Error:  malloc call failed."));
-
-		return -1;
-	}
-
-	result = init_config(&config);
-	if(result == -1)
-	{
-		fprintf(stderr,_("Non-Fatal Error: Failed to read config."));
-		fprintf(stderr,_("Using default configuration information."));
-	}
-
 	/* Process command line args */
 	if(argc > 0)
 	{
@@ -124,6 +108,20 @@ int     main(int argc,char *argv[])
 		}
 	}
 
+	if(NULL == (config = (struct cks_config *)malloc(sizeof(struct cks_config))))
+	{
+		fprintf(stderr,_("cksd:  Fatal Error"));
+		fprintf(stderr,_("cksd:  Out of Memory Error:  malloc call failed."));
+
+		return -1;
+	}
+
+	result = init_config(&config);
+	if(result == -1)
+	{
+		fprintf(stderr,_("Non-Fatal Error: Failed to read config."));
+		fprintf(stderr,_("Using default configuration information."));
+	}
 
 	openlog("cksd",LOG_PID|LOG_ODELAY,LOG_USER);
 	syslog(LOG_INFO,_("cksd:  starting"));
@@ -240,6 +238,7 @@ int     main(int argc,char *argv[])
 		else
 		{
 			close(s);
+			memset(buff,0x00,128);
 			z = read_line(c,buff,128);
 
 			if(strncasecmp("GET",buff,3) == 0)
@@ -310,15 +309,9 @@ int accept_connect(int c, struct cks_config *config)
 	PGconn          *conn = NULL;
 
 
-	if(NULL == (keyring = (struct openPGP_keyring *)malloc(sizeof(struct openPGP_keyring))))
-	{
-		fprintf(stderr,"Malloc call for keyring failed.\n");
-
-		return -1;
-	}
-
 	do
 	{
+		memset(buff,0x00,64);
 		z = read_line(c,buff,64);
 		if( strncasecmp("User-Agent: cks_sync",buff,20) == 0)
 		{
@@ -329,16 +322,18 @@ int accept_connect(int c, struct cks_config *config)
 
 	if(strncasecmp("Content-Length: ",buff,16) == 0)
 	{
-		/* TODO: Check if Null */
 		data = strtok(buff," ");
+		if(data == NULL)
+			return -1;
 		data = strtok('\0'," ");
+		if(data == NULL)
+			return -1;
 		content_length = atoi(data);
 		if(content_length > 127999)
 		{
 			log_err(_("cksd: Non-Fatal Error."),0,config);
 			log_err(_("cksd: Content Length exceeds expectations."),0,config);
 			log_err(_("cksd: Content Length"),0,config);
-			free_keyring(&keyring);
 
 			return -1;
 		}
@@ -347,7 +342,6 @@ int accept_connect(int c, struct cks_config *config)
 			log_err(_("cksd: Non-Fatal Error."),0,config);
 			log_err(_("cksd: Content Length below minimum expectations."),0,config);
 			log_err(_("cksd: Content Length"),0,config);
-			free_keyring(&keyring);
 
 			return -1;
 		}
@@ -355,7 +349,6 @@ int accept_connect(int c, struct cks_config *config)
 		{
 			log_err(_("cksd:  Non-Fatal Error."),0,config);
 			log_err(_("cksd:  Memory Allocation Error."),0,config);
-			free_keyring(&keyring);
 
 			return -1;
 		}
@@ -363,7 +356,7 @@ int accept_connect(int c, struct cks_config *config)
 
 		while(total_read < content_length)
 		{
-			read_buff[0] = '\0';
+			memset(read_buff,0x00,1024);
 			z = read(c,read_buff,1023);
 			read_buff[z] = '\0';
 			strncat(content,read_buff,127999);
@@ -376,15 +369,21 @@ int accept_connect(int c, struct cks_config *config)
 		}
 		content[content_length] = '\0';
 
-		/* TODO: test result */
-		hex_to_ascii(content);
+		rslt = hex_to_ascii(content);
+		if(rslt != 0)
+		{
+			if(content != NULL)
+				free(content);
+				
+			return -1;
+		}
 
 		/* Test value for SQL injection */
 		if( (strchr(content, '\'') != NULL) || (strchr(content, ';') != NULL) )
 		{
 			do_error_page(_("The characters ' and ; are currently not allowed in queries."));
-			free(content);
-			free_keyring(&keyring);
+			if(content != NULL)
+				free(content);
 
 			return -1;
 		}
@@ -397,27 +396,47 @@ int accept_connect(int c, struct cks_config *config)
 		if(radix_recd == NULL)
 		{
 			printf("cksd.c: Failed to Malloc memory for radix_recd\n");
-			free(content);
-			free_keyring(&keyring);
+			if(content != NULL)
+				free(content);
 
 			return -1;
 		}
 		radix_recd[0] = '\0';
 		strncpy(radix_recd,ptr,radix_len);
 
-		rslt = init_openPGP_keyring(&keyring,content_length+1);
-		if(rslt != 0)
-		{
-			printf(_("Init Keyring Failed.  %d\n"),rslt);
-			fflush(0);
-		}
+
+	if(NULL == (keyring = (struct openPGP_keyring *)malloc(sizeof(struct openPGP_keyring))))
+	{
+		fprintf(stderr,"Malloc call for keyring failed.\n");
+		if(content != NULL)
+			free(content);
+		if(radix_recd != NULL)
+			free(radix_recd);
+
+		return -1;
+	}
+	rslt = init_openPGP_keyring(&keyring,content_length+1);
+	if(rslt != 0)
+	{
+		printf(_("Init Keyring Failed.  %d\n"),rslt);
+		fflush(0);
+		free_keyring(&keyring);
+		if(content != NULL)
+			free(content);
+		if(radix_recd != NULL)
+			free(radix_recd);
+			
+		return -1;
+	}
 
 		rslt = process_buffer(ptr,keyring,D_SOURCE_CKSD);
 		if(rslt == -1)
 		{
 			free_keyring(&keyring);
-			free(content);
-			free(radix_recd);
+			if(content != NULL)
+				free(content);
+			if(content != NULL)
+				free(radix_recd);
 
 			return -1;
 		}
@@ -426,8 +445,10 @@ int accept_connect(int c, struct cks_config *config)
 		if(rslt == -1)
 		{
 			free_keyring(&keyring);
-			free(content);
-			free(radix_recd);
+			if(content != NULL)
+				free(content);
+			if(radix_recd != NULL)
+				free(radix_recd);
 
 			return -1;
 		}
@@ -438,8 +459,10 @@ int accept_connect(int c, struct cks_config *config)
 		{
 			fprintf(stderr,"Failed to connect to the db.\n");
 			free_keyring(&keyring);
-			free(content);
-			free(radix_recd);
+			if(content != NULL)
+				free(content);
+			if(radix_recd != NULL)
+				free(radix_recd);
 
 			return -1;
 		}
@@ -555,8 +578,10 @@ int accept_connect(int c, struct cks_config *config)
 			{
 				log_err(_("cksd:  Failed error adding keyring!\n"),0,config);
 				free_keyring(&keyring);
-				free(content);
-				free(radix_recd);
+				if(content != NULL)
+					free(content);
+				if(radix_recd != NULL)
+					free(radix_recd);
 
 				return -1;
 			}
@@ -571,18 +596,12 @@ int accept_connect(int c, struct cks_config *config)
 	}
 
 	if(content != NULL)
-	{
 		free(content);
-	}
 	if(radix_recd != NULL)
-	{
 		free(radix_recd);
-	}
 	free_keyring(&keyring);
 	if(conn != NULL)
-	{
-                PQfinish(conn);
-	}
+		PQfinish(conn);
 
 
 	return status;
@@ -599,12 +618,23 @@ int parse_get_request(int c, unsigned char *buff, struct cks_config *config)
 
 
 	memset(strtime,0x00,50);
-	/* TODO: test all these returned pointers */
+	
 	data = strtok(buff," ");
+	if(data == NULL)
+		return -1;
 	data = strtok('\0'," ");
+	if(data == NULL)
+		return -1;
 	data_2 = strtok(data,"=");
+	if(data_2 == NULL)
+		return -1;
 	data_2 = strtok('\0',"=");
+	if(data_2 == NULL)
+		return -1;
 	data_2 = strtok('\0',"=");
+	if(data_2 == NULL)
+		return -1;
+	
 	if(strncasecmp("0x",data_2,2) != 0)
 	{
 		write_line_to_socket(c,"HTTP/1.0 200 OK\n");
@@ -624,7 +654,7 @@ int parse_get_request(int c, unsigned char *buff, struct cks_config *config)
 	else if( (strchr(data_2, '\'') != NULL) || (strchr(data_2, ';') != NULL) )
 	{
 		fprintf(stderr,_("The characters ' and ; are currently not allowed in queries."));
-		/* TODO: log SQL injection attempt and close the connection */
+		log_err("cksd: SQL injection attempt.",0,config);
 
 		return -1;
 	}
@@ -653,7 +683,6 @@ int parse_get_request(int c, unsigned char *buff, struct cks_config *config)
 	return 0;
 }
 
-/* TODO: This function shouldn't free the config, it should just close the dbconn and return an error. */
 int  retrieve_key_from_db(int c, unsigned char *key_id, struct cks_config *config)
 {
 	PGconn          *conn = NULL;

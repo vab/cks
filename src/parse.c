@@ -34,14 +34,14 @@ int parse_keyring(struct openPGP_keyring **keyring,int source)
 	unsigned long	loop_index =0;
 	unsigned long	lenbytes = 0;
 	unsigned long	pktlen = 0;
-        unsigned int	i=0;
+	unsigned int	i=0;
 	long l = 0;
 	struct openPGP_pubkey *pubkey = NULL;
 	struct openPGP_packet *new_packet = NULL;
-        char *pkt_data_ptr = NULL;
-        unsigned char tmp_buffer[7];
-        unsigned int tmp_index = 0;
-        unsigned int have_pubkey = 0;
+	char *pkt_data_ptr = NULL;
+	unsigned char tmp_buffer[7];
+	unsigned int tmp_index = 0;
+	unsigned int have_pubkey = 0;
 
 	int rslt = 0;
 
@@ -57,27 +57,27 @@ int parse_keyring(struct openPGP_keyring **keyring,int source)
 		return -1;
 	}
 
-        while(loop_index < (*keyring)->buffer_idx)
-        {
-                d = 0x00;
+	while(loop_index < (*keyring)->buffer_idx)
+	{
+		d = 0x00;
 		e = 0x00;
 		f = 0x00;
 		g = 0x00;
 		h = 0x00;
 		k = 0x00;
-                lenbytes = 0;
-                data = 0x00;
-                pktlen = 0;
-                tmp_index = 0;
+		lenbytes = 0;
+		data = 0x00;
+		pktlen = 0;
+		tmp_index = 0;
 
-                new_packet = (struct openPGP_packet *) malloc(sizeof(struct openPGP_packet));
-                if(new_packet == NULL)
-                {
-                        fprintf(stderr,_("parse.c: Failed to malloc memory for new packet.\n"));
-                        do_error_page(_("Memory Allocation Error"));
+		new_packet = (struct openPGP_packet *) malloc(sizeof(struct openPGP_packet));
+		if(new_packet == NULL)
+		{
+			fprintf(stderr,_("parse.c: Failed to malloc memory for new packet.\n"));
+			do_error_page(_("Memory Allocation Error"));
 
-                        return -1;
-                }
+			return -1;
+		}
 		rslt = init_openPGP_packet(&new_packet);
 		if(rslt == -1)
 		{
@@ -303,22 +303,23 @@ int parse_pubkey(struct openPGP_pubkey **pubkey,int source)
 		return -1;
 	}
 
-        while(loop_index < (*pubkey)->buffer_idx)
-        {
-                d = 0x00;
+	while(loop_index < (*pubkey)->buffer_idx)
+	{
+		d = 0x00;
 		e = 0x00;
-                lenbytes =0;
-                data = 0x00;
-                pktlen = 0;
+		lenbytes =0;
+		data = 0x00;
+		pktlen = 0;
+		tmp_index = 0;
 
-                new_packet = (struct openPGP_packet *) malloc(sizeof(struct openPGP_packet));
-                if(new_packet == NULL)
-                {
-                        fprintf(stderr,_("parse.c: Failed to malloc memory for new packet.\n"));
-                        do_error_page(_("Memory Allocation Error"));
+		new_packet = (struct openPGP_packet *) malloc(sizeof(struct openPGP_packet));
+		if(new_packet == NULL)
+		{
+			fprintf(stderr,_("parse.c: Failed to malloc memory for new packet.\n"));
+			do_error_page(_("Memory Allocation Error"));
 
 			return -1;
-                }
+		}
 		rslt = init_openPGP_packet(&new_packet);
 		if(rslt == -1)
 		{
@@ -328,11 +329,9 @@ int parse_pubkey(struct openPGP_pubkey **pubkey,int source)
 			return -1;
 		}
 
-                tmp_index = 0;
-
-                new_packet->pkt_len_d[0] = 0x00;
-                new_packet->pkt_len_d[1] = 0x00;
-                d = (*pubkey)->buffer[loop_index++];
+		new_packet->pkt_len_d[0] = 0x00;
+		new_packet->pkt_len_d[1] = 0x00;
+		d = (*pubkey)->buffer[loop_index++];
 		if((d & 0x40))
 		{
 			/* New Format PGP Packet */
@@ -340,7 +339,8 @@ int parse_pubkey(struct openPGP_pubkey **pubkey,int source)
 			new_packet->packet_id = d & 0x3f;
 			tmp_buffer[tmp_index] = d;
 			tmp_index++;
-			if(loop_index > (*pubkey)->buffer_idx) break;
+			if(loop_index > (*pubkey)->buffer_idx)
+				break;
 			d = (*pubkey)->buffer[loop_index++];
 			tmp_buffer[tmp_index] = d;
 			tmp_index++;
@@ -384,18 +384,19 @@ int parse_pubkey(struct openPGP_pubkey **pubkey,int source)
 			}
 			else
 			{
-				lenbytes =0;
-				printf("length Error\n");
-				printf("Fell thought length depermination loop.\n");
+				lenbytes = 0;
+				fprintf(stderr,"parse.c: length Error\n");
+				fprintf(stderr,"parse.c: Fell thought length determination loop.\n");
 			}
 			pktlen = new_packet->len_bytes = lenbytes;
 		}
 		else
-		{
+		{ /* TODO: This is currently not working */
 			/* Old Format PGP Packet */
 			tmp_buffer[tmp_index] = d;
 			tmp_index++;
-			if(loop_index > (*pubkey)->buffer_idx) break;
+			if(loop_index > (*pubkey)->buffer_idx)
+				break;
 			data = (d>>2)&0xf;
 			lenbytes = ((d&3)==3)? 0 : (1<<(d & 3));
 			new_packet->len_bytes = lenbytes;
@@ -406,34 +407,35 @@ int parse_pubkey(struct openPGP_pubkey **pubkey,int source)
 				tmp_buffer[tmp_index] = d;
 				new_packet->the_len_bytes[l] = d;
 				tmp_index++;
-				if(loop_index > (*pubkey)->buffer_idx) break;
+				if(loop_index > (*pubkey)->buffer_idx)
+					break;
 				pktlen |= d;
 			}
 			new_packet->packet_id = data;
 		}
 
-                if((data == 0x06) && (have_pubkey == 1))
-                {
-                        do_error_page(_("Please Include only one pubkey key in your submission."));
+		if((data == 0x06) && (have_pubkey == 1))
+		{
+			do_error_page(_("Please include only one pubkey key in your submission."));
 			free_packet(&new_packet);
 
-                        return -1;
-                }
-                else if(data == 0x06)
-                {
-                        have_pubkey = 1;
-                }
-                new_packet->packet_length = pktlen;
+			return -1;
+		}
+		else if(data == 0x06)
+		{
+			have_pubkey = 1;
+		}
+		new_packet->packet_length = pktlen;
 		if((pktlen < 1) || (pktlen > D_CKS_MAX_LEN))
 		{
-			fprintf(stderr,"parse.c: fatal error:  Sanity Check of packet length failed.\n");
+			fprintf(stderr,"parse.c: fatal error:  Sanity check of packet length failed.\n");
 			fprintf(stderr,"parse.c: 420: %lu\n",pktlen);
 			fprintf(stderr,"prase.c: d: %d\n",d);
 			free_packet(&new_packet);
 
 			return -1;
 		}
-                new_packet->packet_data = pkt_data_ptr = (char *)malloc(pktlen+1);
+		new_packet->packet_data = pkt_data_ptr = (char *)malloc(pktlen+1);
 		if(new_packet->packet_data == NULL)
 		{
 			fprintf(stderr,_("parse.c: fatal error: Failed to malloc packet_data out of memory.\n"));
@@ -441,7 +443,7 @@ int parse_pubkey(struct openPGP_pubkey **pubkey,int source)
 
 			return -1;
 		}
-                new_packet->full_packet_data = (char *)malloc(pktlen+10);
+		new_packet->full_packet_data = (char *)malloc(pktlen+10);
 		if(new_packet->full_packet_data == NULL)
 		{
 			fprintf(stderr,_("parse.c: fatal error: Failed to malloc full_packet_data out of memory.\n"));
@@ -449,20 +451,23 @@ int parse_pubkey(struct openPGP_pubkey **pubkey,int source)
 
 			return -1;
 		}
+		/* This is where packet data is copied into the packet data structure */
 		for(i=0;i<tmp_index;i++)
-                {
-                        new_packet->full_packet_data[i] = tmp_buffer[i];
-                        new_packet->full_packet_length++;
-                }
-                for(i=0;i<pktlen;i++)
-                {
-                        d = (*pubkey)->buffer[loop_index++];
-                        *pkt_data_ptr++ = d;
-                        new_packet->full_packet_data[new_packet->full_packet_length++] = d;
-                        if(loop_index > (*pubkey)->buffer_idx) break;
-                }
+		{
+			new_packet->full_packet_data[i] = tmp_buffer[i];
+			new_packet->full_packet_length++;
+		}
+		for(i=0;i<pktlen;i++)
+		{
+			d = (*pubkey)->buffer[loop_index++];
+			*pkt_data_ptr++ = d;
+			new_packet->full_packet_data[new_packet->full_packet_length++] = d;
+			if(loop_index > (*pubkey)->buffer_idx)
+				break;
+		}
 
-                rslt = add_packet(pubkey,new_packet);
+		/* Finally, we add the packet to the public key data structure */
+		rslt = add_packet(pubkey,new_packet);
 		if(rslt == -1)
 		{
 			fprintf(stderr,_("parse.c: parse_keyring: call to add_packet failed.\n"));
@@ -470,9 +475,9 @@ int parse_pubkey(struct openPGP_pubkey **pubkey,int source)
 
 			return -1;
 		}
-        }
+	}
 
-        return 0;
+	return 0;
 }
 
 int build_key_buffer(struct openPGP_pubkey **pubkey,int source)
@@ -525,7 +530,7 @@ int build_key_buffer(struct openPGP_pubkey **pubkey,int source)
 	}
 	/* Here we need to gen a ecksum for the key since our radix was for
 	   the whole keyring */
-        checksum = radix_checksum((*pubkey)->buffer,(*pubkey)->buffer_idx);
+	checksum = radix_checksum((*pubkey)->buffer,(*pubkey)->buffer_idx);
 	if(checksum == -1)
 	{
 		fprintf(stderr,"parse.c: Radix checksum generation failed.\n");
@@ -807,26 +812,26 @@ int parse_public_key_packet(struct openPGP_packet *packet, struct openPGP_pubkey
         }
         else if(packet->packet_data[0] == 0x04)
         {
-                rslt = parse_v4_public_key_packet(packet, key_result);
-		if(rslt == -1)
-		{
-			fprintf(stderr,_("parse.c: parse_public_key_packet: failed to parse pubkey packet.\n"));
+			rslt = parse_v4_public_key_packet(packet, key_result);
+			if(rslt == -1)
+			{
+				fprintf(stderr,_("parse.c: parse_public_key_packet: failed to parse pubkey packet.\n"));
 
-			return -1;
-		}
+				return -1;
+			}
         }
         else
         {
-		if(source == D_SOURCE_ADD_CGI)
-		{
-                	do_error_page(_("Error: Unsupported PGP Version."));
-		}
-		else
-		{
-			fprintf(stderr,"Error: Unsupported PGP Version\n");
-		}
-
-                return -1;
+			if(source == D_SOURCE_ADD_CGI)
+			{
+				do_error_page(_("Error: Unsupported PGP Version."));
+			}
+			else
+			{
+				fprintf(stderr,"Error: Unsupported PGP Version\n");
+			}
+	
+            return -1;
         }
 
         return rslt;
@@ -1056,9 +1061,7 @@ int parse_uid_packet(struct openPGP_packet *packet, struct openPGP_pubkey *key_r
 
 			return -1;
 		}
-		/* memset bugfix */
-		memset(new_id->id_data,0,packet->packet_length+1);
-		/*  ha! ha! Got you fucker. /me takes machete and hack hack hacks into bug pudding. */
+		memset(new_id->id_data,0x00,packet->packet_length+1);
 		new_id->id_len = packet->packet_length;
 		strncpy(new_id->id_data,packet->packet_data,packet->packet_length);
 		new_id->id_data[new_id->id_len] = '\0';
@@ -1163,7 +1166,7 @@ int escape_single_quotes(struct user_id **the_id)
 
 int parse_sig_packet(struct openPGP_packet *packet, struct openPGP_pubkey *key_result, int subkey, int source)
 {
-        struct user_id *id = NULL;
+	struct user_id *id = NULL;
 	int rslt = 0;
 
 
@@ -1279,8 +1282,8 @@ int parse_sig_packet(struct openPGP_packet *packet, struct openPGP_pubkey *key_r
 			}
 
                         return -1;
-                }
-                rslt = parse_v3_sig(packet, new_sig);
+        }
+		rslt = parse_v3_sig(packet, new_sig);
 		if(rslt == -1)
 		{
 			fprintf(stderr,"Failed to parse v3 sig packet.\n");
@@ -1402,19 +1405,15 @@ int parse_sig_packet(struct openPGP_packet *packet, struct openPGP_pubkey *key_r
         else if(new_sig->sig_type == 0x30)
         {
         	id->revoked = 1;
-		rslt = add_sig(id,new_sig);
-		if(rslt == -1)
-		{
-			return -1;
-		}
+			rslt = add_sig(id,new_sig);
+			if(rslt == -1)
+				return -1;
         }
         else
         {
-		rslt = add_sig(id,new_sig);
-		if(rslt == -1)
-		{
-			return -1;
-		}
+			rslt = add_sig(id,new_sig);
+			if(rslt == -1)
+				return -1;
         }
 
 
@@ -1923,6 +1922,7 @@ int parse_v3_public_subkey(struct openPGP_packet *packet, struct openPGP_pubkey 
 	{
 		fprintf(stderr,_("parse.c: call to set_pk_algo_type failed in parse_v3_public_subkey\n"));
 		key_result->key_status = -1;
+		/* TODO: Free the subkey */
 
 		return -1;
 	}
@@ -1992,6 +1992,7 @@ int parse_v4_public_subkey(struct openPGP_packet *packet, struct openPGP_pubkey 
 	{
 		fprintf(stderr,_("parse.c: call to set_pk_algo_type failed in parse_v4_public_subkey\n"));
 		key_result->key_status = -1;
+		/* TODO: Free the subkey */
 
 		return -1;
 	}
@@ -2040,12 +2041,9 @@ int parse_v4_public_subkey(struct openPGP_packet *packet, struct openPGP_pubkey 
         rslt = add_subkey(key_result,the_subkey);
 	
 	if(tmp_buffer != NULL)
-	{
-        	free(tmp_buffer);
-	}
+		free(tmp_buffer);
 
-
-        return rslt;
+	return rslt;
 }
 
 
@@ -2576,7 +2574,7 @@ int process_buffer(char *armored_data, struct openPGP_keyring *key_ring, int sou
         rslt = process_ebuff_ecsum(key_ring, source);
         if(rslt == -1)
         {
-		return -1;
+			return -1;
         }
 
         return 0;
@@ -2604,18 +2602,27 @@ int process_ebuff_ecsum(struct openPGP_keyring *keyring, int source)
 
 		return -1;
 	}
-	decoded_cksum = (unsigned char *)malloc(5);
+
+	keyring->buffer_idx = decode_buffer(keyring->radix_data, keyring->buffer);
+        
+    decoded_cksum = (unsigned char *)malloc(5);
 	if(decoded_cksum == NULL)
 	{
 		fprintf(stderr,_("parse.c: call to malloc in parse_ebuff_ecsum failed.\n"));
 
 		return -1;
 	}
+    rslt = decode_buffer(keyring->encoded_cksum,decoded_cksum);
+	if(rslt != 3)
+	{
+		fprintf(stderr,"parse: 2620: Buffer decoding of cksum failed: %lu.\n", rslt);
+		fprintf(stderr,"parse: 2621: keyring->encoded_cksum: %s\n",keyring->encoded_cksum);
+		if(decoded_cksum != NULL)
+			free(decoded_cksum);
 
-        keyring->buffer_idx = decode_buffer(keyring->radix_data, keyring->buffer);
-        rslt = decode_buffer(keyring->encoded_cksum,decoded_cksum);
-	/* TODO make sure result is the right size. */
-        cksum_0 = (decoded_cksum[0] << 16) + (decoded_cksum[1] << 8) + decoded_cksum[2];
+		return -1;
+	}
+	cksum_0 = (decoded_cksum[0] << 16) + (decoded_cksum[1] << 8) + decoded_cksum[2];
         cksum_1 = radix_checksum(keyring->buffer,keyring->buffer_idx);
         if(cksum_0 != cksum_1)
         {
@@ -2631,9 +2638,7 @@ int process_ebuff_ecsum(struct openPGP_keyring *keyring, int source)
         }
 
 	if(decoded_cksum != NULL)
-	{
 		free(decoded_cksum);
-	}
 
         return ret_val;
 }
@@ -2661,13 +2666,6 @@ int process_ebuff_ecsum_pubkey(struct openPGP_pubkey *pubkey, int source)
 
 		return -1;
 	}
-	decoded_cksum = (unsigned char *)malloc(5);
-	if(decoded_cksum == NULL)
-	{
-		fprintf(stderr,_("Out of Memory: decoded_cksum malloc call failed.\n"));
-		return -1;
-	}
-
 	if(pubkey->buffer == NULL)
 	{
 		printf("pubkey->buffer is null in parse.c line 2672.\n");
@@ -2679,12 +2677,22 @@ int process_ebuff_ecsum_pubkey(struct openPGP_pubkey *pubkey, int source)
 
 		return -1;
 	}
+	
+	decoded_cksum = (unsigned char *)malloc(5);
+	if(decoded_cksum == NULL)
+	{
+		fprintf(stderr,_("Out of Memory: decoded_cksum malloc call failed.\n"));
+		
+		return -1;
+	}
 	rslt = decode_buffer(pubkey->encoded_cksum,decoded_cksum);
 	if(rslt != 3)
 	{
 		fprintf(stderr,"parse: 2224: Buffer decoding of cksum failed: %lu.\n", rslt);
 		fprintf(stderr,"parse: 2225: pubkey->encoded_cksum: %s\n",pubkey->encoded_cksum);
 		dump_pubkey_stderr(pubkey);
+		if(decoded_cksum != NULL)
+			free(decoded_cksum);
 
 		return -1;
 	}

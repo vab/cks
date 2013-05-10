@@ -33,10 +33,6 @@ void print_header(char *title)
 	printf(_("[ <a href=\"index.html\">Search</a> ]\n"));
 	printf(_("[ <a href=\"add.html\">Add A Public Key</a> ]\n"));
 	printf(_("[ <a href=\"advsrch.html\">Advanced Search</a> ]\n"));
-	printf(_("[ <a href=\"sign.html\">Server Key Signing</a> ]<br>\n"));
-	printf(_("[ <a href=\"stats/\">Server Statistics</a> ]\n"));
-	printf(_("[ <a href=\"keystats.html\">Key Statistics</a> ]\n"));
-	printf(_("[ <a href=\"wot.html\">Web of Trust Information</a> ]\n"));
 	printf(_("[ <a href=\"help.html\">Help</a> ]\n"));
 	printf(_("[ <a href=\"about.html\">About CKS</a> ]\n"));
 	printf("</center>\n");
@@ -51,10 +47,6 @@ void print_footer(void)
 	printf(_("[ <a href=\"index.html\">Search</a> ]\n"));
 	printf(_("[ <a href=\"add.html\">Add A Public Key</a> ]\n"));
 	printf(_("[ <a href=\"advsrch.html\">Advanced Search</a> ]\n"));
-	printf(_("[ <a href=\"sign.html\">Server Key Signing</a> ]<br>\n"));
-	printf(_("[ <a href=\"stats/\">Server Statistics</a> ]\n"));
-	printf(_("[ <a href=\"keystats.html\">Key Statistics</a> ]\n"));
-	printf(_("[ <a href=\"wot.html\">Web of Trust Information</a> ]\n"));
 	printf(_("[ <a href=\"help.html\">Help</a> ]\n"));
 	printf(_("[ <a href=\"about.html\">About CKS</a> ]\n"));
 	printf("</center>\n");
@@ -106,41 +98,25 @@ void do_error_page(char *error)
 	printf("</body></html>\n");
 }
 
-/* TODO: This should return an init and be moved to keys.c */
 void chk_key_version(unsigned char vrsn)
 {
 	if(vrsn == (unsigned char)0x04)
 	{
 		return;
 	}
-	else if(vrsn == (unsigned char)0x03)
+	else if((vrsn == (unsigned char)0x03) || (vrsn == (unsigned char)0x02))
 	{
-		print_v3_warning();
+	    printf("<hr size=\"1\" width=\"100%%\">\n");
+	    printf(_("<font color=\"red\">Warning</font>\n"));
+	    printf("<br></br>\n");
+	    printf(_("<p>You have uploaded a PGP key which is of a version less than 4.\n"));
+	    printf(_("PGP keys before version 4 have a number of serious weaknesses in them\n"));
+	    printf(_("which could allow your key, your digitial signatures, or your encrypted\n"));
+	    printf(_("communications, to be more easily compromised.  CryptNET recommends that\n"));
+	    printf(_("you revoke all keys which are of a version less than 4.</p>\n"));
+	    printf("<hr size=\"1\" width=\"100%%\">\n");
 	}
-	else if(vrsn == (unsigned char)0x02)
-	{
-		print_v2_warning();
-	}
 }
-
-void print_v2_warning()
-{
-	printf("<hr size=\"1\" width=\"100%%\">\n");
-	printf(_("<font color=\"red\">Warning</font>\n"));
-	printf("<br></br>\n");
-	printf(_("<p>You have uploaded a PGP key which is of a version less than 4.\n"));
-	printf(_("PGP keys before version 4 have a number of serious weaknesses in them\n"));
-	printf(_("which could allow your key, your digitial signatures, or your encrypted\n"));
-	printf(_("communications, to be more easily compromised.  CryptNET recommends that\n"));
-	printf(_("you revoke all keys which are of a version less than 4.</p>\n"));
-	printf("<hr size=\"1\" width=\"100%%\">\n");
-}
-
-void print_v3_warning()
-{
-	print_v2_warning();
-}
-
 
 /*
    This code in part came from "C Unleashed", it was written by Chad

@@ -29,11 +29,9 @@ void print_footer(void);
 void print_admin_header(char *);
 void print_admin_footer(void);
 
-void	do_error_page(char *);
-int	hex_to_ascii(char *);
+void do_error_page(char *);
+int hex_to_ascii(char *);
 struct name_value_pair_dllst *parse_name_value_pairs(char *);
 
 void chk_key_version(unsigned char vrsn);
-void print_v2_warning(void);
-void print_v3_warning(void);
 

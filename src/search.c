@@ -33,6 +33,8 @@ int main(void)
 	char *name = NULL;
 	char *val = NULL;
 	char *value = NULL;
+	
+	char *debug_val = NULL;
 
 	int rslt = 0;
 	int tmp_var = 0;
@@ -52,22 +54,25 @@ int main(void)
 		fprintf(stderr,_("search:  Using default configuration information.\n"));
 	}
 
-	/* Make the DB Connection. */
+	method = getenv("REQUEST_METHOD");
+	if(method == NULL)
+	{
+			/* Make the DB Connection. */
 	conn = db_connect(config);
 	if(conn == NULL)
 	{
 		fprintf(stderr,"Failed to connect to the db.\n");
-		free(config);
+		if(content != NULL)
+	 		free(content);
+		if(config != NULL)
+			free(config);
 
 		return -1;
 	}
-
-	method = getenv("REQUEST_METHOD");
-	if(method == NULL)
-	{
-		search_by_uid(conn,"vab@cryptnet.net",config);
+		debug_val = (char *)malloc(50);
+		sprintf(debug_val,"%s","92987FBD");
+		search_by_keyid(conn,debug_val,config);
 		/*search_by_uid(conn,"vab@cryptnet.net",config); */
-		db_disconnect(conn);
 
 		free(config);
 
@@ -76,7 +81,6 @@ int main(void)
 	if(method == NULL)
 	{
 		fprintf(stderr, _("search.c:  Request Method is Null.\nExiting...\n"));
-		db_disconnect(conn);
 		free(config);
 
 		return -1;
@@ -87,7 +91,6 @@ int main(void)
 		if(content_length > 300)
 		{
 			do_error_page(_("Content Length expectation exceeded\n"));
-			db_disconnect(conn);
 			free(config);
 
 			return -1;
@@ -96,7 +99,6 @@ int main(void)
 		if(content == NULL)
 		{
 			do_error_page(_("Server was unable to malloc memory.  Server out of memory."));
-			db_disconnect(conn);
 			free(config);
 
 			return -1;
@@ -111,8 +113,8 @@ int main(void)
 		if(content_length > 300)
 		{
 			do_error_page(_("Content Length expectation exceeded\n"));
-			db_disconnect(conn);
-			free(config);
+			if(config != NULL)
+			    free(config);
 
 			return -1;
 		}
@@ -120,8 +122,10 @@ int main(void)
 		if(content == NULL)
 		{
 			do_error_page(_("Server was unable to malloc memory.  Server out of memory."));
-			db_disconnect(conn);
-			free(config);
+			if(content != NULL)
+			    free(content);
+			if(config != NULL)
+			    free(config);
 
 			return -1;
 		}
@@ -129,7 +133,8 @@ int main(void)
 		if(rslt == 0)
 		{
 		    do_error_page(_("Error reading content."));
-		    db_disconnect(conn);
+		    if(content != NULL)
+		        free(content);
 		    if(config != NULL)
 		        free(config);
 		    
@@ -140,7 +145,6 @@ int main(void)
 	else
 	{
 		do_error_page(_("Unknown Method."));
-		db_disconnect(conn);
 		free(config);
 
 		return -1;
@@ -152,6 +156,10 @@ int main(void)
 	if(name == NULL)
 	{
 		fprintf(stderr,"name was null\n");
+		if(content != NULL)
+	 		free(content);
+		if(config != NULL)
+			free(config);
 		
 		return -1;
 	}
@@ -159,8 +167,10 @@ int main(void)
 	if(!(val))
 	{
 		do_error_page(_("Error: NULL Search value. Please, hit the back button on your browser and search again."));
-		db_disconnect(conn);
-		free(config);
+		if(content != NULL)
+	 		free(content);
+		if(config != NULL)
+			free(config);
 
 		return 0;
 	}
@@ -169,8 +179,10 @@ int main(void)
 	if(!(value))
 	{
 		do_error_page(_("Error: NULL Search value. Please, hit the back button on your browser and search again."));
-		db_disconnect(conn);
-		free(config);
+		if(content != NULL)
+	 		free(content);
+		if(config != NULL)
+			free(config);
 
 		return 0;
 	}
@@ -179,17 +191,32 @@ int main(void)
 	if( (strchr(value, '\'') != NULL) || (strchr(value, ';') != NULL) )
 	{
 		do_error_page(_("The characters ' and ; are currently not allowed in queries."));
-		db_disconnect(conn);
-		free(config);
+		if(content != NULL)
+	 		free(content);
+		if(config != NULL)
+			free(config);
 
 		return 0;
+	}
+	
+	/* Make the DB Connection. */
+	conn = db_connect(config);
+	if(conn == NULL)
+	{
+		fprintf(stderr,"Failed to connect to the db.\n");
+		if(content != NULL)
+	 		free(content);
+		if(config != NULL)
+			free(config);
+
+		return -1;
 	}
 
 	print_header(_("Search Results:"));
 
 	if(strcmp("stype=uid",name) == 0)
 	{
-                search_by_uid(conn,value,config);
+		search_by_uid(conn,value,config);
 	}
 	else if(strcmp("stype=fp",name) == 0)
 	{
@@ -197,6 +224,10 @@ int main(void)
 		if(rslt != 0)
 		{
 			fprintf(stderr,"Function search_by_fingerprint() returned and error: %d\n", rslt);
+			if(content != NULL)
+	 			free(content);
+			if(config != NULL)
+				free(config);
 
 			return -1;
 		}
@@ -228,7 +259,10 @@ int main(void)
 	{
 		do_error_page(_("Invalid query. Search type not understood."));
 		db_disconnect(conn);
-		free(config);
+		if(content != NULL)
+	 		free(content);
+		if(config != NULL)
+			free(config);
 
 		return 0;
 	}
@@ -236,6 +270,8 @@ int main(void)
 	print_footer();
 
 	db_disconnect(conn);
+	if(content != NULL)
+	 	free(content);
 	if(config != NULL)
 		free(config);
 
@@ -250,11 +286,7 @@ int search_by_uid(PGconn *conn, char *uid, struct cks_config *config)
 	unsigned int nts = 0;
 	int rslt = 0;
 
-	/*
-		It's probably a good idea here to do some kind of test to see if this
-		is an email address, then maybe query against a seperate table that is
-		indexed by only email address.  That could yield a speed up.
-	*/
+
 		memset(stmt,0x00,200);
         snprintf(stmt,199,"select DISTINCT(fp) from cks_uid_table where uid~*'%s'",uid);
 
@@ -300,10 +332,10 @@ int search_by_uid(PGconn *conn, char *uid, struct cks_config *config)
 
 int search_by_keyid(PGconn *conn, char *keyid, struct cks_config *config)
 {
-        char stmt[161];
-        PGresult *result = NULL;
+	char stmt[161];
+	PGresult *result = NULL;
 	int rslt = 0;
-        unsigned int nts = 0;
+	unsigned int nts = 0;
 
 
 	remove_spaces(keyid);
@@ -319,11 +351,12 @@ int search_by_keyid(PGconn *conn, char *keyid, struct cks_config *config)
         snprintf(stmt,160,"select key_id,fkey_id,fp from cks_keyid_table where key_id = '%s'", keyid);
 
         result = PQexec(conn, stmt);
-
         if((PQresultStatus(result) != PGRES_TUPLES_OK) && (PQresultStatus(result) != PGRES_COMMAND_OK))
         {
                 fprintf(stderr, _("search.c:  Command didn't return tuples properly.\n"));
                 fprintf(stderr, _("search.c:  Failing Query: %s\n"),stmt);
+                fprintf(stderr,"search.c: Postgres Response: %s\n", PQresStatus(PQresultStatus(result))); 
+                fprintf(stderr,"search.c: Postgres Error: %s\n",PQresultErrorMessage(result));
                 PQclear(result);
                 db_exit_nicely(conn);
         }
@@ -667,6 +700,7 @@ int  retrieve_key(PGconn *conn, char *fingerprint, unsigned int full,struct cks_
         return rslt;
 }
 
+
 void print_pgp5_x509_note(void)
 {
 	printf(_("<b>Missing Key ID Packet</b>\n"));
@@ -680,3 +714,4 @@ void print_pgp5_x509_note(void)
 	printf(_("key id packets, please upgrade to a newer version of PGP.</p>\n"));
 	printf("<br></br>\n");
 }
+

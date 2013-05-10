@@ -1,17 +1,17 @@
 Summary: CryptNET OpenPGP Keyserver
 Name: cks
-Version: 0.1.4
+Version: 0.2.4
 Release: 1
 Copyright: Gnu General Public License [GPL]
 Group: Security/Cryptography
 URL: http://www.cryptnet.net/fsp/cks/
-Source: http://www.cryptnet.net/fsp/cks/cks-0.1.4.tar.gz
+Source: http://www.cryptnet.net/fsp/cks/cks-0.2.4.tar.gz
 Buildroot: /var/tmp/%{name}-%{version}-%{release}
 Prefix: /usr/local
 
 %description
   This is version %{version} of the CryptNET Keyserver.  This is an
-  RFC2440 compliant PGP keyserver which uses postgres for key storage.
+  RFC4880 compliant PGP keyserver which uses postgres for key storage.
 
 %prep
 rm -rf $RPM_BUILD_ROOT
@@ -33,3 +33,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,0755)
+

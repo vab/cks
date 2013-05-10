@@ -173,50 +173,54 @@ int merge_signatures(struct user_id *id_new, struct user_id *id_old)
 	{
 		return 0;
 	}
-        first_sig = source_walk_sig;
-        id_new->signatures = first_sig;
+	
+	first_sig = source_walk_sig;
+	id_new->signatures = first_sig;
 
-        while(source_walk_sig != NULL)
-        {
-                sig_found = 0;
-                if(id_old == NULL)
-                {
-                	return 0;
+	while(source_walk_sig != NULL)
+	{
+		sig_found = 0;
+		if(id_old == NULL)
+		{
+			return 0;
 		}
-                if(id_old->signatures == NULL) { return 0; }
-                target_walk_sig = (struct key_signature *)get_first_sig(id_old->signatures);
-                while(target_walk_sig != NULL)
-                {
-                        sig_found = compare_signatures(source_walk_sig,target_walk_sig);
-                        if(sig_found)
-                        {
-                                break;
-                        }
-                        target_walk_sig = target_walk_sig->next;
-                }
-                if(!sig_found)
-                {
+		if(id_old->signatures == NULL)
+		{
+			return 0;
+		}
+		target_walk_sig = (struct key_signature *)get_first_sig(id_old->signatures);
+		while(target_walk_sig != NULL)
+		{
+			sig_found = compare_signatures(source_walk_sig,target_walk_sig);
+			if(sig_found)
+			{
+				break;
+			}
+			target_walk_sig = target_walk_sig->next;
+		}
+		if(!sig_found)
+		{
 			#ifdef DEBUG
 			fprintf(stderr,"New sig Found\n");
 			#endif
 			new_stuff = 1;
-                        last_sig = (struct key_signature *)get_last_sig(id_old->signatures);
-                        last_sig->next = source_walk_sig;
-                        next_walk_sig = source_walk_sig->next;
-                        extract_sig(source_walk_sig);
-                        source_walk_sig->prev = last_sig;
-                        last_sig = source_walk_sig;
-                        last_sig->next = NULL;
-                        source_walk_sig = next_walk_sig;
-                }
-                else
-                {
+			last_sig = (struct key_signature *)get_last_sig(id_old->signatures);
+			last_sig->next = source_walk_sig;
+			next_walk_sig = source_walk_sig->next;
+			extract_sig(source_walk_sig);
+			source_walk_sig->prev = last_sig;
+			last_sig = source_walk_sig;
+			last_sig->next = NULL;
+			source_walk_sig = next_walk_sig;
+		}
+		else
+		{
 			sig_found = 0;
-                        source_walk_sig = source_walk_sig->next;
-                }
-        }
+			source_walk_sig = source_walk_sig->next;
+		}
+	}
 
-        return new_stuff;
+	return new_stuff;
 }
 
 
@@ -250,34 +254,34 @@ int compare_signatures(struct key_signature *sig_0,struct key_signature *sig_1)
 
 int merge_subkeys(struct openPGP_subkey *new_subkey, struct openPGP_subkey *old_subkey)
 {
-        struct openPGP_subkey   *walk_subkey_new = NULL;
-        struct openPGP_subkey	*walk_subkey_old = NULL;
-        struct openPGP_subkey	*last_subkey = NULL;
-        struct openPGP_subkey	*next_subkey = NULL;
+	struct openPGP_subkey   *walk_subkey_new = NULL;
+	struct openPGP_subkey	*walk_subkey_old = NULL;
+	struct openPGP_subkey	*last_subkey = NULL;
+	struct openPGP_subkey	*next_subkey = NULL;
 	unsigned int new_stuff = 0;
-        unsigned int subkey_found = 0;
+	unsigned int subkey_found = 0;
 	int rslt = 0;
 
 	#ifdef DEBUG
 	fprintf(stderr,"merge_subkeys called.\n");
 	#endif
-        walk_subkey_new = (struct openPGP_subkey *)get_first_subkey(new_subkey);
+	walk_subkey_new = (struct openPGP_subkey *)get_first_subkey(new_subkey);
 
-        while(walk_subkey_new != NULL)
-        {
-                subkey_found = 0;
-                walk_subkey_old = (struct openPGP_subkey *)get_first_subkey(old_subkey);
-                while(walk_subkey_old != NULL)
-                {
-                	if( (strncmp(walk_subkey_old->keyid_t,walk_subkey_new->keyid_t,10) == 0) )
-                        {
-                                subkey_found = 1;
-                                break;
-                        }
-                        walk_subkey_old = walk_subkey_old->next;
-                }
-                if(!subkey_found)
-                {
+	while(walk_subkey_new != NULL)
+	{
+		subkey_found = 0;
+		walk_subkey_old = (struct openPGP_subkey *)get_first_subkey(old_subkey);
+		while(walk_subkey_old != NULL)
+		{
+			if( (strncmp(walk_subkey_old->keyid_t,walk_subkey_new->keyid_t,10) == 0) )
+			{
+				subkey_found = 1;
+				break;
+			}
+			walk_subkey_old = walk_subkey_old->next;
+		}
+		if(!subkey_found)
+		{
 			#ifdef DEBUG
 			fprintf(stderr,"New subkey Found\n");
 			#endif
@@ -285,40 +289,40 @@ int merge_subkeys(struct openPGP_subkey *new_subkey, struct openPGP_subkey *old_
                         last_subkey = (struct openPGP_subkey *)get_last_subkey(old_subkey);
 			if(last_subkey == NULL)
 			{
-                        	next_subkey = walk_subkey_new->next;
-                        	extract_subkey(walk_subkey_new);
+				next_subkey = walk_subkey_new->next;
+				extract_subkey(walk_subkey_new);
 
-                        	last_subkey = walk_subkey_new;
-                        	last_subkey->next = NULL;
+				last_subkey = walk_subkey_new;
+				last_subkey->next = NULL;
 			}
 			else
 			{
-                        	next_subkey = walk_subkey_new->next;
-                        	extract_subkey(walk_subkey_new);
+				next_subkey = walk_subkey_new->next;
+				extract_subkey(walk_subkey_new);
 
-                        	last_subkey->next = walk_subkey_new;
-                        	last_subkey = walk_subkey_new;
-                        	last_subkey->next = NULL;
+				last_subkey->next = walk_subkey_new;
+				last_subkey = walk_subkey_new;
+				last_subkey->next = NULL;
 			}
-                }
-                else
-                {
-                        rslt = merge_binding_signatures(walk_subkey_new, walk_subkey_old);
+		}
+		else
+		{
+			rslt = merge_binding_signatures(walk_subkey_new, walk_subkey_old);
 			if(rslt == -1)
 			{
 				return rslt;
 			}
-                }
-                if(!subkey_found)
-                {
+		}
+		if(!subkey_found)
+		{
                         walk_subkey_new = next_subkey;
-                }
-                else
-                {
+		}
+		else
+		{
 			subkey_found = 0;
-                        walk_subkey_new = walk_subkey_new->next;
-                }
-        }
+			walk_subkey_new = walk_subkey_new->next;
+		}
+	}
 
 	return new_stuff;
 }
@@ -327,13 +331,13 @@ int merge_subkeys(struct openPGP_subkey *new_subkey, struct openPGP_subkey *old_
 int merge_binding_signatures(struct openPGP_subkey *new_subkey, struct openPGP_subkey *old_subkey)
 {
 	/* Don't know what the RFC says, but GnuPG says we gotta Merge 'em. */
-        struct key_signature *source_walk_sig = NULL;
-        struct key_signature *target_walk_sig = NULL;
-        struct key_signature *next_walk_sig = NULL;
-        struct key_signature *last_sig = NULL;
-        struct key_signature *first_sig = NULL;
+	struct key_signature *source_walk_sig = NULL;
+	struct key_signature *target_walk_sig = NULL;
+	struct key_signature *next_walk_sig = NULL;
+	struct key_signature *last_sig = NULL;
+	struct key_signature *first_sig = NULL;
 
-        unsigned int sig_found = 0;
+	unsigned int sig_found = 0;
 	unsigned int new_stuff = 0;
 
 
@@ -341,71 +345,74 @@ int merge_binding_signatures(struct openPGP_subkey *new_subkey, struct openPGP_s
 	fprintf(stderr,"merge_binding_signatures called.\n");
 	#endif
 	source_walk_sig = (struct key_signature *)get_first_sig(new_subkey->binding_signatures);
-        first_sig = source_walk_sig;
-        new_subkey->binding_signatures = first_sig;
+	first_sig = source_walk_sig;
+	new_subkey->binding_signatures = first_sig;
 
-        while(source_walk_sig != NULL)
-        {
-                sig_found = 0;
-                if(old_subkey == NULL)
-                {
-                	return 0;
+	while(source_walk_sig != NULL)
+	{
+		sig_found = 0;
+		if(old_subkey == NULL)
+		{
+			return 0;
 		}
-                if(old_subkey->binding_signatures == NULL) { return 0; }
-                target_walk_sig = (struct key_signature *)get_first_sig(old_subkey->binding_signatures);
-                while(target_walk_sig != NULL)
-                {
-                        sig_found = compare_signatures(source_walk_sig,target_walk_sig);
-                        if(sig_found)
-                        {
-                                break;
-                        }
-                        target_walk_sig = target_walk_sig->next;
-                }
-                if(!sig_found)
-                {
+		if(old_subkey->binding_signatures == NULL)
+		{
+			return 0;
+		}
+		target_walk_sig = (struct key_signature *)get_first_sig(old_subkey->binding_signatures);
+		while(target_walk_sig != NULL)
+		{
+			sig_found = compare_signatures(source_walk_sig,target_walk_sig);
+			if(sig_found)
+			{
+				break;
+			}
+			target_walk_sig = target_walk_sig->next;
+		}
+		if(!sig_found)
+		{
 			#ifdef DEBUG
 			fprintf(stderr,"New subkey binding signature Found\n");
 			#endif
 			new_stuff = 1;
-                        last_sig = (struct key_signature *)get_last_sig(old_subkey->binding_signatures);
-                        last_sig->next = source_walk_sig;
-                        next_walk_sig = source_walk_sig->next;
-                        extract_sig(source_walk_sig);
-                        source_walk_sig->prev = last_sig;
-                        last_sig = source_walk_sig;
-                        last_sig->next = NULL;
-                        source_walk_sig = next_walk_sig;
-                }
-                else
-                {
+			last_sig = (struct key_signature *)get_last_sig(old_subkey->binding_signatures);
+			last_sig->next = source_walk_sig;
+			next_walk_sig = source_walk_sig->next;
+			extract_sig(source_walk_sig);
+			source_walk_sig->prev = last_sig;
+			last_sig = source_walk_sig;
+			last_sig->next = NULL;
+			source_walk_sig = next_walk_sig;
+		}
+		else
+		{
 			sig_found = 0;
-                        source_walk_sig = source_walk_sig->next;
-                }
-        }
+			source_walk_sig = source_walk_sig->next;
+		}
+	}
 
-        return new_stuff;
+	return new_stuff;
 }
 
 
 int build_new_radix_data(struct openPGP_pubkey *pubkey)
 {
-        struct user_id *walk_id = NULL;
-        struct key_signature *walk_sig = NULL;
-        struct openPGP_subkey *walk_subkey = NULL;
-        unsigned char *buffer = NULL;
-        unsigned long buf_len = 0;
-        unsigned long encoded = 0;
-        unsigned char *decoded = NULL;
-        unsigned int decoded_length = 0;
-        unsigned char decoded_cksum[5];
+	struct user_id *walk_id = NULL;
+	struct key_signature *walk_sig = NULL;
+	struct openPGP_subkey *walk_subkey = NULL;
+	unsigned char *buffer = NULL;
+	unsigned long buf_len = 0;
+	unsigned long encoded = 0;
+	unsigned char *decoded = NULL;
+	unsigned int decoded_length = 0;
+	unsigned char decoded_cksum[5];
 
-        int checksum = 0;
+	int checksum = 0;
 	int result = 0;
 
 
 	memset(decoded_cksum,0x00,5);
-        buffer = (unsigned char *)malloc((strlen(pubkey->radix_data)) *2);
+	buffer = (unsigned char *)malloc((strlen(pubkey->radix_data)) *2);
 	if(buffer == NULL)
 	{
 		fprintf(stderr,_("merge_keys.c:  Malloc call failed: out of memory!\n"));
@@ -413,8 +420,8 @@ int build_new_radix_data(struct openPGP_pubkey *pubkey)
 
 		return -1;
 	}
-        memset(buffer,0x00,((strlen(pubkey->radix_data)) *2));
-        decoded = (unsigned char *)malloc((strlen(pubkey->radix_data)) *2);
+	memset(buffer,0x00,((strlen(pubkey->radix_data)) *2));
+	decoded = (unsigned char *)malloc((strlen(pubkey->radix_data)) *2);
 	if(decoded == NULL)
 	{
 		fprintf(stderr,_("merge_keys.c:  Malloc call failed: out of memory!\n"));
@@ -427,8 +434,8 @@ int build_new_radix_data(struct openPGP_pubkey *pubkey)
 
 		return -1;
 	}
-        memset(decoded,0x00,((strlen(pubkey->radix_data)) *2));
-        decoded_length = decode_buffer(pubkey->radix_data,decoded);
+	memset(decoded,0x00,((strlen(pubkey->radix_data)) *2));
+	decoded_length = decode_buffer(pubkey->radix_data,decoded);
 	if(decoded_length == 0)
 	{
 		fprintf(stderr,_("merge_keys.c:  error null buffer decoded length is 0.\n"));
@@ -449,7 +456,7 @@ int build_new_radix_data(struct openPGP_pubkey *pubkey)
                 printf("%d: 0x%0.2x\n",i, decoded[i]);
         }
 */
-        memset(pubkey->radix_data,0x00,strlen(pubkey->radix_data));
+	memset(pubkey->radix_data,0x00,strlen(pubkey->radix_data));
 
 	if(pubkey->the_packet == NULL)
 	{
@@ -466,47 +473,40 @@ int build_new_radix_data(struct openPGP_pubkey *pubkey)
 
 		return -1;
 	}
-        /*  Now we have to walk the pubkey */
-        result = append_packet_to_buffer(pubkey->the_packet,buffer,buf_len);
+	
+	/*  Now we have to walk the pubkey */
+	result = append_packet_to_buffer(pubkey->the_packet,buffer,buf_len);
 	if(result == -1)
 	{
 		fprintf(stderr,_("merge_keys.c: Failed to append packet to buffer in merge keys.\n"));
 		if(buffer != NULL)
-		{
 			free(buffer);
-		}
 		if(decoded != NULL)
-		{
 			free(decoded);
-		}
 		pubkey->key_status = -1;
 
 		return -1;
 	}
 
-        buf_len += pubkey->the_packet->full_packet_length;
+	buf_len += pubkey->the_packet->full_packet_length;
 
-        walk_id = (struct user_id *)get_first_uid(pubkey->ids);
+	walk_id = (struct user_id *)get_first_uid(pubkey->ids);
 	if(walk_id == NULL)
 	{
 		fprintf(stderr,_("merge_keys.c: walk_id returned NULL.\n"));
 		if(buffer != NULL)
-		{
 			free(buffer);
-		}
 		if(decoded != NULL)
-		{
 			free(decoded);
-		}
 		pubkey->key_status = -1;
 
 		return -1;
 	}
 
-        while(walk_id != NULL)
-        {
-                /* Appending a UID */
-                result = append_packet_to_buffer(walk_id->the_packet,buffer,buf_len);
+	while(walk_id != NULL)
+	{
+		/* Appending a UID */
+		result = append_packet_to_buffer(walk_id->the_packet,buffer,buf_len);
 		if(result == -1)
 		{
 			fprintf(stderr,_("merge_keys.c: Failed to append packet to buffer (UID).\n"));
@@ -522,18 +522,18 @@ int build_new_radix_data(struct openPGP_pubkey *pubkey)
 
 			return -1;
 		}
-                buf_len += walk_id->the_packet->full_packet_length;
+		buf_len += walk_id->the_packet->full_packet_length;
 
-                walk_sig = (struct key_signature *)get_first_sig(walk_id->signatures);
+		walk_sig = (struct key_signature *)get_first_sig(walk_id->signatures);
 		if(walk_sig == NULL)
 		{
 			walk_id->signatures = NULL;
 		}
-                while(walk_sig != NULL)
-                {
-                        /* Appending A Signature */
-                    /*    printf("appending a signature\n", walk_sig->key_id); */
-                        result = append_packet_to_buffer(walk_sig->the_packet,buffer,buf_len);
+		while(walk_sig != NULL)
+		{
+			/* Appending A Signature */
+			/*    printf("appending a signature\n", walk_sig->key_id); */
+			result = append_packet_to_buffer(walk_sig->the_packet,buffer,buf_len);
 			if(result == -1)
 			{
 				fprintf(stderr,_("merge_keys.c: Failed to append packet to buffer (signature).\n"));
@@ -549,23 +549,23 @@ int build_new_radix_data(struct openPGP_pubkey *pubkey)
 
 				return -1;
 			}
-                        buf_len += walk_sig->the_packet->full_packet_length;
+			buf_len += walk_sig->the_packet->full_packet_length;
 
-                        walk_sig = walk_sig->next;
-                }
-                walk_id = walk_id->next;
-        }
+			walk_sig = walk_sig->next;
+		}
+		walk_id = walk_id->next;
+	}
 
-        walk_subkey = (struct openPGP_subkey *)get_first_subkey(pubkey->subkeys);
+	walk_subkey = (struct openPGP_subkey *)get_first_subkey(pubkey->subkeys);
 	if(walk_subkey == NULL)
 	{
 		pubkey->subkeys = NULL;
 	}
-        while(walk_subkey != NULL)
-        {
-                /* Appending A Subkey */
+	while(walk_subkey != NULL)
+	{
+		/* Appending A Subkey */
 		/* printf("appending a Subkey: %s\n",walk_subkey->keyid_t); */
-                result = append_packet_to_buffer(walk_subkey->the_packet,buffer,buf_len);
+		result = append_packet_to_buffer(walk_subkey->the_packet,buffer,buf_len);
 		if(result == -1)
 		{
 			fprintf(stderr,_("merge_keys.c: Failed to append packet to buffer (subkey).\n"));
@@ -583,23 +583,19 @@ int build_new_radix_data(struct openPGP_pubkey *pubkey)
 			return -1;
 		}
 
-                buf_len += walk_subkey->the_packet->full_packet_length;
+		buf_len += walk_subkey->the_packet->full_packet_length;
 
-                /* Walk Subkey Binding Signatures */
-                walk_sig = (struct key_signature *)get_first_sig(walk_subkey->binding_signatures);
+		/* Walk Subkey Binding Signatures */
+		walk_sig = (struct key_signature *)get_first_sig(walk_subkey->binding_signatures);
 		if(walk_sig == NULL)
 		{
 			walk_subkey->binding_signatures = NULL;
 		}
-                /*
-                    I need to look more closely at the standard.  Maybe you can't have more
-                    than one binding sig?
-                */
-                while(walk_sig != NULL)
-                {
-                        /* Appending a Subkey Signature */
+		while(walk_sig != NULL)
+		{
+			/* Appending a Subkey Signature */
 			/* printf("appending a subkey binding signature\n"); */
-                        result = append_packet_to_buffer(walk_sig->the_packet,buffer,buf_len);
+			result = append_packet_to_buffer(walk_sig->the_packet,buffer,buf_len);
 			if(result == -1)
 			{
 				fprintf(stderr,_("merge_keys.c: Failed to append packet to buffer (subkey binding sig).\n"));
@@ -616,28 +612,28 @@ int build_new_radix_data(struct openPGP_pubkey *pubkey)
 
 				return -1;
 			}
-                        buf_len += walk_sig->the_packet->full_packet_length;
+			buf_len += walk_sig->the_packet->full_packet_length;
 
-                        walk_sig = walk_sig->next;
-                }
-                walk_subkey = walk_subkey->next;
-        }
+			walk_sig = walk_sig->next;
+		}
+		walk_subkey = walk_subkey->next;
+	}
 
-        /*  Radix encode the new key */
-        encoded = encode_buffer(buffer, pubkey->radix_data,buf_len);
+	/*  Radix encode the new key */
+	encoded = encode_buffer(buffer, pubkey->radix_data,buf_len);
 
-        /* Calc the checksum */
-        checksum = radix_checksum(buffer,buf_len);
+	/* Calc the checksum */
+	checksum = radix_checksum(buffer,buf_len);
 
-        /*Break the checksum down into bytes so that I can radix encode it */
-        pubkey->encoded_cksum[0] = (checksum >> 16) & 0x000000FF;
-        pubkey->encoded_cksum[1] = (checksum >> 8) & 0x000000FF;
-        pubkey->encoded_cksum[2] = checksum & 0x000000FF;
-        pubkey->encoded_cksum[3] = '\0';
-        pubkey->encoded_cksum[4] = '\0';
+	/*Break the checksum down into bytes so that I can radix encode it */
+	pubkey->encoded_cksum[0] = (checksum >> 16) & 0x000000FF;
+	pubkey->encoded_cksum[1] = (checksum >> 8) & 0x000000FF;
+	pubkey->encoded_cksum[2] = checksum & 0x000000FF;
+	pubkey->encoded_cksum[3] = '\0';
+	pubkey->encoded_cksum[4] = '\0';
 
-        encoded = encode_buffer(pubkey->encoded_cksum, decoded_cksum,3);
-        snprintf(pubkey->encoded_cksum, 5, "%c%c%c%c", decoded_cksum[0],decoded_cksum[1],decoded_cksum[2],decoded_cksum[3]);
+	encoded = encode_buffer(pubkey->encoded_cksum, decoded_cksum,3);
+	snprintf(pubkey->encoded_cksum, 5, "%c%c%c%c", decoded_cksum[0],decoded_cksum[1],decoded_cksum[2],decoded_cksum[3]);
 
 	#ifdef DEBUG
 	fprintf(stderr,"New Radix created with cksum: %s\n",pubkey->encoded_cksum);
@@ -654,7 +650,7 @@ int build_new_radix_data(struct openPGP_pubkey *pubkey)
 	}
 
 
-        return 0;
+	return 0;
 }
 
 
@@ -676,18 +672,19 @@ int append_packet_to_buffer(struct openPGP_packet *packet, unsigned char *buffer
 		return -1;
 	}
 
-        loop_index = 0;
-        while(loop_index < packet->full_packet_length)
-        {
-                buffer[len] = packet->full_packet_data[loop_index];
-                /* Print out all the packet data with indexes by uncommenting the line below - for debugging merges */
-                /* printf("%d:  %d: 0x%0.2x\n",len, loop_index, packet->full_packet_data[loop_index]); */
-                loop_index++;
-                len++;
-        }
+	loop_index = 0;
+	while(loop_index < packet->full_packet_length)
+	{
+		buffer[len] = packet->full_packet_data[loop_index];
+		/* Print out all the packet data with indexes by uncommenting the line below - for debugging merges */
+		/* printf("%d:  %d: 0x%0.2x\n",len, loop_index, packet->full_packet_data[loop_index]); */
+		loop_index++;
+		len++;
+	}
 	/*  When debugging uncommenting this will provide an index to look at the merged binary data against. */
 	/*  printf("%d\n",loop_index);*/
 
 
 	return 0;
 }
+

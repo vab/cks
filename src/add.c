@@ -79,7 +79,7 @@ int main(void)
 		return -1;
 	}
 	tmp1 = (char *)malloc(128000);
-	if(content == NULL)
+	if(tmp1 == NULL)
 	{
 		fprintf(stderr,_("malloc call failed.\n"));
 		free(config);
@@ -174,7 +174,10 @@ int main(void)
 	if(NULL == (radix_recd = (char *)malloc(strlen(ptr)+1)))
 	{
 		do_error_page(_("Failed to malloc memory for radix_recd"));
-		free(config);
+		if(content != NULL)
+		    free(content);
+		if(config != NULL)
+			free(config);
 
 		return -1;
 	}
@@ -185,7 +188,12 @@ int main(void)
 	{
 		do_error_page(_("Failed to malloc region for keyring!\n"));
         	printf(_("Key ring is null?\n"));
-		free(config);
+       	if(radix_recd != NULL)
+       		free(radix_recd);
+		if(content != NULL)
+		    free(content);
+		if(config != NULL)
+			free(config);
 
 		return -1;
 	}
@@ -195,7 +203,12 @@ int main(void)
 		do_error_page(_("Failed to process buffer.\n"));
 		fprintf(stderr, _("add.c:  Failed to process buffer.\n"));
 		free_keyring(&keyring);
-		free(config);
+       	if(radix_recd != NULL)
+       		free(radix_recd);
+		if(content != NULL)
+		    free(content);
+		if(config != NULL)
+			free(config);
 
 		return -1;
 	}
@@ -205,7 +218,12 @@ int main(void)
 		do_error_page(_("Failed to parse keyring.\n"));
 		fprintf(stderr, _("add.c:  Failed to parse key ring.\n"));
 		free_keyring(&keyring);
-		free(config);
+       	if(radix_recd != NULL)
+       		free(radix_recd);
+		if(content != NULL)
+		    free(content);
+		if(config != NULL)
+			free(config);
 
 		return -1;
 	}
@@ -215,7 +233,13 @@ int main(void)
 	if(conn == NULL)
 	{
 		fprintf(stderr,"Failed to connect to the db.\n");
-		free(config);
+		free_keyring(&keyring);
+       	if(radix_recd != NULL)
+       		free(radix_recd);
+		if(content != NULL)
+		    free(content);
+		if(config != NULL)
+			free(config);
 
 		return -1;
 	}
@@ -240,3 +264,4 @@ int main(void)
 
 	return 0;
 }
+

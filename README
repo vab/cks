@@ -13,7 +13,6 @@ delete.cgi:    cgi script to delete keys.
 stats.cgi:     cgi script for some realtime db stats
 keyimg.cgi:    cgi script to display images from keys
 cks_sync:      program to sync with other nodes, schedule with cron.
-cks_mail_sync: program to sync with horowitz mail based keyservers.
 cks_export:    program for backing up database
 cks_import:    program for directly importing binary pgp keyrings
 
@@ -27,3 +26,4 @@ Further Information
 For more information about administrating cks and the technical 
 documentation on the cks program, please see the contents of the
 doc directory.
+

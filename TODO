@@ -1,6 +1,7 @@
 Version 0.2.4
 -------------
 Fix segfault on packet parse
+Packet parse is not 64 bit clean
 Clear up key merger code
 Isolate postgres DB calls into db.c file
 Uniform and refactor error logging 

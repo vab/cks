@@ -1281,6 +1281,7 @@ int strtoupper(char *string)
 
 int remove_spaces(char *data)
 {
+	unsigned int len = 0;
 	unsigned int i = 0;
 	unsigned int j = 0;
 
@@ -1291,12 +1292,15 @@ int remove_spaces(char *data)
 
 		return -1;
 	}
-	while(data[j])
+	
+	len = strlen(data);
+	while(len != 0)
 	{
 		if(isspace(data[j]))
 			j++;
 		else
 			data[i++] = toupper(data[j++]);
+		len--;
 	}
 	data[i] = '\0';
 
