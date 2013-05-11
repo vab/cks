@@ -122,40 +122,42 @@ create table cks_rejected_keys
 --  The userid that your websever runs under.
 --  If you are using a different userid, change 
 --  to that userid.  You should not use nobody.
-create user "httpd";
+create user "apache";
 
-grant select on cks_keyid_table to "httpd";
-grant insert on cks_keyid_table to "httpd";
-grant update on cks_keyid_table to "httpd";
-grant delete on cks_keyid_table to "httpd";
-grant select on cks_key_info_table to "httpd";
-grant insert on cks_key_info_table to "httpd";
-grant update on cks_key_info_table to "httpd";
-grant delete on cks_key_info_table to "httpd";
-grant select on cks_fp_key_table to "httpd";
-grant insert on cks_fp_key_table to "httpd";
-grant update on cks_fp_key_table to "httpd";
-grant delete on cks_fp_key_table to "httpd";
-grant select on cks_uid_table to "httpd";
-grant insert on cks_uid_table to "httpd";
-grant update on cks_uid_table to "httpd";
-grant delete on cks_uid_table to "httpd";
-grant select on cks_puid_table to "httpd";
-grant insert on cks_puid_table to "httpd";
-grant update on cks_puid_table to "httpd";
-grant delete on cks_puid_table to "httpd";
-grant select on cks_pending_sync to "httpd";
-grant insert on cks_pending_sync to "httpd";
-grant update on cks_pending_sync to "httpd";
-grant delete on cks_pending_sync to "httpd";
-grant select on cks_other_servers to "httpd";
-grant insert on cks_other_servers to "httpd";
-grant update on cks_other_servers to "httpd";
-grant delete on cks_other_servers to "httpd";
-grant select on cks_rejected_keys to "httpd";
-grant insert on cks_rejected_keys to "httpd";
-grant update on cks_rejected_keys to "httpd";
-grant delete on cks_rejected_keys to "httpd";
+grant select on cks_keyid_table to "apache";
+grant insert on cks_keyid_table to "apache";
+grant update on cks_keyid_table to "apache";
+grant delete on cks_keyid_table to "apache";
+grant select on cks_key_info_table to "apache";
+grant insert on cks_key_info_table to "apache";
+grant update on cks_key_info_table to "apache";
+grant delete on cks_key_info_table to "apache";
+grant select on cks_fp_key_table to "apache";
+grant insert on cks_fp_key_table to "apache";
+grant update on cks_fp_key_table to "apache";
+grant delete on cks_fp_key_table to "apache";
+grant select on cks_uid_table to "apache";
+grant insert on cks_uid_table to "apache";
+grant update on cks_uid_table to "apache";
+grant delete on cks_uid_table to "apache";
+grant select on cks_puid_table to "apache";
+grant insert on cks_puid_table to "apache";
+grant update on cks_puid_table to "apache";
+grant delete on cks_puid_table to "apache";
+grant select on cks_pending_sync to "apache";
+grant insert on cks_pending_sync to "apache";
+grant update on cks_pending_sync to "apache";
+grant delete on cks_pending_sync to "apache";
+grant select on cks_other_servers to "apache";
+grant insert on cks_other_servers to "apache";
+grant update on cks_other_servers to "apache";
+grant delete on cks_other_servers to "apache";
+grant select on cks_rejected_keys to "apache";
+grant insert on cks_rejected_keys to "apache";
+grant update on cks_rejected_keys to "apache";
+grant delete on cks_rejected_keys to "apache";
+
+
 
 --  The Keyserver user which you can run cksd under.
 --  If you use a different userid, change keyserver
@@ -212,6 +214,10 @@ grant select on cks_uid_table to "vab";
 grant insert on cks_uid_table to "vab";
 grant update on cks_uid_table to "vab";
 grant delete on cks_uid_table to "vab";
+grant select on cks_puid_table to "vab";
+grant insert on cks_puid_table to "vab";
+grant update on cks_puid_table to "vab";
+grant delete on cks_puid_table to "vab";
 grant select on cks_pending_sync to "vab";
 grant insert on cks_pending_sync to "vab";
 grant update on cks_pending_sync to "vab";

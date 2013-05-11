@@ -28,6 +28,9 @@
 #include "radix.h"
 #include "cgi.h"
 
+#include "cks_parse_v3.h"
+#include "cks_parse_v4.h"
+
 
 /*  General Parsing Functions */
 int parse_keyring(struct openPGP_keyring **,int);
@@ -36,8 +39,6 @@ int parse_pubkey(struct openPGP_pubkey **,int);
 /*  Packet Parsing Functions  */
 int parse_packets(struct openPGP_pubkey **, int );
 int parse_public_key_packet(struct openPGP_packet *, struct openPGP_pubkey *, int);
-int parse_v3_public_key_packet(struct openPGP_packet *, struct openPGP_pubkey *);
-int parse_v4_public_key_packet(struct openPGP_packet *, struct openPGP_pubkey *);
 
 int parse_uid_packet(struct openPGP_packet *, struct openPGP_pubkey *);
 int escape_single_quotes(struct user_id **);
@@ -45,20 +46,12 @@ int escape_single_quotes(struct user_id **);
 int parse_one_pass_sig_packet(struct openPGP_packet *, struct openPGP_pubkey *,int,int);
 
 int parse_sig_packet(struct openPGP_packet *, struct openPGP_pubkey *,int,int);
-int parse_v3_sig(struct openPGP_packet *,struct key_signature *);
-int parse_v4_sig_sub_packets(struct openPGP_packet *,struct key_signature *, struct openPGP_pubkey *);
 int parse_public_subkey_packet(struct openPGP_packet *, struct openPGP_pubkey *);
 
 int parse_attribute_packet(struct openPGP_packet *,struct openPGP_pubkey *,int,int);
 int parse_attribute_sub_packets(struct openPGP_packet *,struct openPGP_pubkey *);
 
-int parse_v3_public_subkey(struct openPGP_packet *, struct openPGP_pubkey *);
-int parse_v4_public_subkey(struct openPGP_packet *, struct openPGP_pubkey *);
-
 int parse_subkey_binding_sig(struct openPGP_packet *, struct openPGP_subkey *);
-int parse_v4_subkey_binding_sig(struct openPGP_packet *, struct key_signature *new_sig, struct openPGP_subkey *);
-int parse_v4_subkey_binding_sig_subpackets(struct openPGP_packet *, struct key_signature *, struct openPGP_subkey *);
-int parse_v3_subkey_binding_sig(struct openPGP_packet *, struct key_signature *new_sig, struct openPGP_subkey *);
 
 /*  Function to build the buffer */
 int build_key_buffer(struct openPGP_pubkey **,int);

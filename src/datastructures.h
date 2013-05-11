@@ -289,4 +289,5 @@ void free_packet(struct openPGP_packet **);
 /*
 #define DEBUG
 */
+
 #endif

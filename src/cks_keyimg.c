@@ -69,7 +69,7 @@ int	main(void)
 
 	#ifdef DEBUG
 	fingerprint = (char *)malloc(100);
-	strcpy(fingerprint,"AB55B9403A6A42DC0B8A9A4C1D835EF87B1CB6B3");
+	strcpy(fingerprint,"72F871AD580481D14C84CADC08B779A592987FBD");
 	#else
 	method = getenv("REQUEST_METHOD");
 	if(method == NULL)
@@ -250,8 +250,7 @@ int  retrieve_key_and_display(PGconn *conn, char *fingerprint, unsigned int full
 		return -1;
 	}
 
-	#ifdef DEBUG
-	dump_pubkey_packet_info_stderr(key_result);
+//	dump_pubkey_packet_info_stderr(key_result);
 	if(NULL == (test = fopen("/tmp/test.jpg","w")))
 	{
 		fprintf(stderr,"Failed to open out put file.\n");
@@ -259,20 +258,31 @@ int  retrieve_key_and_display(PGconn *conn, char *fingerprint, unsigned int full
 		return -1;
 	}
 
-	printf("image_len = %d\n",key_result->image_len);
+	fprintf(stderr,"image_len = %lu\n",key_result->image_len);
+	fputc(0xd8,test);
+	fputc(0xff,test);
+	fputc(0xe0,test);
+	fputc(0xff,test);
+	fputc(0x10,test);
+	fputc(0x00,test);
+	fputc(0x46,test);
+	fputc(0x4a,test);
+	fputc(0x46,test);
+	fputc(0x49,test);
+	fputc(0x01,test);
+	fputc(0x00,test);
 	for(i=0;i<key_result->image_len;i++)
 	{
 		fputc(key_result->img_data[i],test);
 	}
 
 	fclose(test);
-	#else
 	printf("Content-type: image/jpg\n\n");
+	printf("%c%c%c%c%c%c%c%c%c%c\n", 0xd8, 0xff, 0xe0, 0xff, 0x10, 0x00, 0x46, 0x4a, 0x46, 0x49, 0x01, 0x00);
 	for(i=0;i<key_result->image_len;i++)
 	{
 		printf("%c",key_result->img_data[i]);
 	}
-	#endif
 
 	free_pubkey(&key_result);
 

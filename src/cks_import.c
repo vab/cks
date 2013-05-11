@@ -276,6 +276,15 @@ int process_file(PGconn *conn, char *filename, int verbose)
 		tmp_index = 0;
 		memset(tmp_buffer,0x00,7);
 
+		d = fgetc(kr);
+		if(feof(kr))
+		{
+			fprintf(stderr,"End of file.\n");
+			break;
+		}
+		tmp_buffer[tmp_index] = d;
+		tmp_index++;
+		
 		new_packet = (struct openPGP_packet *)malloc(sizeof(struct openPGP_packet));
 		#ifdef DEBUG
 		fprintf(stderr,"cks_import: Packet Malloc\n");
@@ -295,21 +304,15 @@ int process_file(PGconn *conn, char *filename, int verbose)
 			return -1;
 		}
 
-		#ifdef DEBUG
-		printf("DEBUG:  NEW PACKET\n");
-		#endif
-
 		new_packet->pkt_len_d[0] = 0x00;
 		new_packet->pkt_len_d[1] = 0x00;
-		d = fgetc(kr);
-		if(feof(kr))
-			break;
-		tmp_buffer[tmp_index] = d;
-		tmp_index++;
 
 		if((d & 0x40))
 		{
 			/* New Format PGP Packet */
+			#ifdef DEBUG
+			printf("DEBUG:  NEW PACKET\n");
+			#endif
 			/* This is used for photos */
 			new_packet->packet_id = d & 0x3f;
 			tmp_buffer[tmp_index] = d;
@@ -361,7 +364,7 @@ int process_file(PGconn *conn, char *filename, int verbose)
 				k = fgetc(kr);
 				lenbytes = (f << 24) | (g << 16) | (h << 8)  | k;
 				#ifdef DEBUG
-				printf("0x%2X 0x%2X 0x%2X 0x%2X 0x%08x\n",f,g,h,k, lenbytes);
+				printf("IMPORT: 0x%2X 0x%2X 0x%2X 0x%2X 0x%08x\n",f,g,h,k, lenbytes);
 				#endif
 				new_packet->header_length = 5;
 
@@ -385,7 +388,7 @@ int process_file(PGconn *conn, char *filename, int verbose)
 			data = (d>>2)&0xf;
 
 			#ifdef DEBUG
-			printf("DEBUG:  PACKETTYPE: %d\n",data);
+			printf("DEBUG:  OLD PACKETTYPE: %d\n",data);
 			#endif
 			lenbytes = ((d&3)==3)? 0 : (1<<(d & 3));
 			new_packet->len_bytes = lenbytes;
@@ -429,6 +432,7 @@ int process_file(PGconn *conn, char *filename, int verbose)
 						fprintf(stderr,_("cks_import: PGP Key Error: parse_packets failed.\n"));
 						#endif
 						pubkey->key_status = -1;
+						rslt = D_KEY_ADDITION_FAILED;
 					}
 				}
 				/* Insert pubkey into db */
@@ -439,6 +443,7 @@ int process_file(PGconn *conn, char *filename, int verbose)
 						printf("%s\n",pubkey->fp_t);
 						fflush(0);
 					}
+					fprintf(stderr,"calling db_add_pubkey\n");
 					rslt = db_add_pubkey(conn,pubkey,D_SOURCE_CKS_SYNC_UTIL);
 					if(rslt == -1)
 					{

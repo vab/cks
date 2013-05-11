@@ -1,9 +1,3 @@
-Version 0.2.5
--------------
-Remove LDAP support
-Remove memory cache support
-Remove legacy e-mail synch code
-
 Version 0.2.4
 -------------
 Revert v0.2.2 pthreads changes.
@@ -13,6 +7,11 @@ Code clean up (replace spaces with tabs)
 Additional error checking and logging.
 Add missing posgres permissions grants to cks.sql (v9 compatibility change)
 Remove hooks for IBM DB2 Support
+Remove LDAP support
+Remove memory cache support
+Remove legacy e-mail synch code
+Hack to ignore improperly attached 0x1a Policy URI subpackets
+sql grants bug fix
 
 Version 0.2.3
 -------------

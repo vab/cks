@@ -20,6 +20,7 @@
 
 #include "search.h"
 
+#define DEBUG
 
 int main(void)
 {
