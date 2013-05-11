@@ -10,6 +10,7 @@ Remove hooks for IBM DB2 Support
 Remove LDAP support
 Remove memory cache support
 Remove legacy e-mail synch code
+Remove XML hooks
 Hack to ignore improperly attached 0x1a Policy URI subpackets
 sql grants bug fix
 
