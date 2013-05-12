@@ -1,4 +1,4 @@
-SUBDIRS = src dns doc html
+SUBDIRS = src doc html
 
 EXTRA_DIST = cks.spec BUGS 
 

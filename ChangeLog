@@ -11,6 +11,7 @@ Remove LDAP support
 Remove memory cache support
 Remove legacy e-mail synch code
 Remove XML hooks
+Remove unused DNS code
 Hack to ignore improperly attached 0x1a Policy URI subpackets
 sql grants bug fix
 

@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/sync_manage.c)
-AM_INIT_AUTOMAKE(cks,0.2.2)
+AC_INIT(src/cksd.c)
+AM_INIT_AUTOMAKE(cks,0.2.4)
 
 dnl Set of available languages.
 ALL_LINGUAS="de es"
@@ -128,4 +128,4 @@ fi
 AC_MSG_NOTICE([where to store config... $CONF])
 AC_DEFINE_UNQUOTED(CONF, "$CONF", [Where to find cks.sql.])
 
-AC_OUTPUT([Makefile cks.sql cks.conf html/Makefile src/Makefile dns/Makefile doc/Makefile])
+AC_OUTPUT([Makefile cks.sql cks.conf html/Makefile src/Makefile doc/Makefile])
