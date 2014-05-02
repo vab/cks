@@ -37,24 +37,11 @@ AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(limits.h unistd.h)
 
 dnl Checks for postgres header files.
-if test $PG_INCLUDE_DIR; then
-AC_CHECK_HEADER(${PG_INCLUDE_DIR}/libpq-fe.h, FOUND_LIBPQ_FE_H=1)
-else
-AC_CHECK_HEADER(libpq-fe.h, FOUND_LIBPQ_FE_H=1)
-fi
+AC_CHECK_HEADERS([postgresql/libpq-fe.h libpq-fe.h ${PG_INCLUDE_DIR}/libpq-fe.h], [break], [AC_MSG_ERROR([PostgreSQL headers not found or not usable])])
+PKG_CPPFLAGS="-I/usr/include/postgresql"
 
-if test $FOUND_LIBPQ_FE_H; then
+if test $PG_INCLUDE_DIR; then
 PKG_CPPFLAGS="-I${PG_INCLUDE_DIR}"
-else
-echo
-echo I could not find the include file libpq-fe.h.
-echo Either it is missing or installed in a non-standard
-echo location.  If libpq-fe.h is installed, set PG_INCLUDE_DIR
-echo to the directory containing libpq-fe.h.  PG_INCLUDE_DIR
-echo only needs to be set during package installation, not
-echo while running RPgSQL.
-echo
-exit 1
 fi
 
 dnl Checks for typedefs, structures, and compiler characteristics.
