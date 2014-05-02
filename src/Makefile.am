@@ -1,6 +1,6 @@
 bin_PROGRAMS = cksd cks_sync cks_import cks_export add search sync_manage stats delete cks_keyimg cks_reconcile
 
-INCLUDES = $(PKG_CPPFLAGS)
+AM_CPPFLAGS = $(PKG_CPPFLAGS)
 
 cksd_SOURCES = cksd.c cksd.h db.c db.h cgi.c cgi.h datastructures.c datastructures.h parse.c parse.h cks_parse_v4.c cks_parse_v4.h cks_parse_v3.c cks_parse_v3.h radix.c radix.h std_types.c std_types.h md5.c md5.h sha.c sha.h keys.c keys.h merge_keys.c merge_keys.h retrieve.c retrieve.h cks_config.c cks_config.h cks_socket.c cks_socket.h cks_error.c cks_error.h cks_log.c cks_log.h bithelp.h types.h cks_debug.c cks_debug.h cks_constants.h common.h
 cksd_LDADD = -lpq

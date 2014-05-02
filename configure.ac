@@ -1,6 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/cksd.c)
-AM_INIT_AUTOMAKE(cks,0.2.4)
+AC_INIT([cks], [0.2.4])
+AC_CONFIG_SRCDIR([src/cksd.c])
+AM_INIT_AUTOMAKE
 
 dnl Set of available languages.
 ALL_LINGUAS="de es"
